@@ -1,0 +1,44 @@
+# OAuth2 Configuration Template
+# Copy this file to application-local.yml and fill in your OAuth2 credentials
+# DO NOT commit application-local.yml to version control!
+
+spring:
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: YOUR_GOOGLE_CLIENT_ID_HERE
+            client-secret: YOUR_GOOGLE_CLIENT_SECRET_HERE
+            scope:
+              - email
+              - profile
+          github:
+            client-id: YOUR_GITHUB_CLIENT_ID_HERE
+            client-secret: YOUR_GITHUB_CLIENT_SECRET_HERE
+            scope:
+              - user:email
+              - read:user
+
+app:
+  jwt:
+    secret: change-this-to-a-secure-256-bit-secret-key-for-jwt-token-signing
+
+# How to get OAuth2 credentials:
+#
+# GOOGLE:
+# 1. Go to https://console.cloud.google.com/
+# 2. Create a new project or select existing
+# 3. Enable Google+ API
+# 4. Go to Credentials > Create Credentials > OAuth 2.0 Client ID
+# 5. Application type: Web application
+# 6. Authorized redirect URIs: http://localhost:8080/login/oauth2/code/google
+# 7. Copy Client ID and Client Secret
+#
+# GITHUB:
+# 1. Go to https://github.com/settings/developers
+# 2. Click "New OAuth App"
+# 3. Application name: SpringMart Local
+# 4. Homepage URL: http://localhost:8080
+# 5. Authorization callback URL: http://localhost:8080/login/oauth2/code/github
+# 6. Copy Client ID and generate Client Secret

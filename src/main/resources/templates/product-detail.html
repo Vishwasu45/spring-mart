@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+    layout:decorate="~{layout}">
+
+<head>
+    <title th:text="${product.name} + ' - SpringMart'">Product Detail</title>
+</head>
+
+<body>
+    <div layout:fragment="content">
+        <div class="container my-5">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="/">Home</a></li>
+                    <li class="breadcrumb-item"><a href="/products">Products</a></li>
+                    <li class="breadcrumb-item active" th:text="${product.name}">Product</li>
+                </ol>
+            </nav>
+
+            <div class="row">
+                <div class="col-md-6">
+                    <img th:src="${product.primaryImageUrl != null ? product.primaryImageUrl : 'https://via.placeholder.com/600x400?text=' + product.name}"
+                        class="img-fluid rounded shadow" th:alt="${product.name}">
+                </div>
+
+                <div class="col-md-6">
+                    <span class="badge bg-primary mb-2" th:text="${product.categoryName}">Category</span>
+                    <h1 th:text="${product.name}">Product Name</h1>
+
+                    <div class="mb-3" th:if="${product.averageRating > 0}">
+                        <i class="bi bi-star-fill text-warning"></i>
+                        <span class="fw-bold"
+                            th:text="${#numbers.formatDecimal(product.averageRating, 1, 1)}">4.5</span>
+                        <span class="text-muted" th:text="'(' + ${product.reviewCount} + ' reviews)'"></span>
+                    </div>
+
+                    <h2 class="text-primary mb-4" th:text="'$' + ${product.price}">$99.99</h2>
+
+                    <p class="lead" th:text="${product.description}">Product description goes here...</p>
+
+                    <div class="mb-4">
+                        <p class="mb-2">
+                            <strong>SKU:</strong> <span th:text="${product.sku}">SKU123</span>
+                        </p>
+                        <p class="mb-2">
+                            <strong>Seller:</strong> <span th:text="${product.sellerName}">Seller Name</span>
+                        </p>
+                        <p class="mb-2">
+                            <strong>Availability:</strong>
+                            <span th:if="${product.stockQuantity > 0}" class="text-success">
+                                <i class="bi bi-check-circle-fill"></i> In Stock (<span
+                                    th:text="${product.stockQuantity}">10</span> available)
+                            </span>
+                            <span th:unless="${product.stockQuantity > 0}" class="text-danger">
+                                <i class="bi bi-x-circle-fill"></i> Out of Stock
+                            </span>
+                        </p>
+                    </div>
+
+                    <div class="d-grid gap-2">
+                        <button class="btn btn-primary btn-lg" th:disabled="${product.stockQuantity <= 0}"
+                            onclick="alert('Cart functionality will be added in Phase 2!')">
+                            <i class="bi bi-cart-plus"></i> Add to Cart
+                        </button>
+                        <a href="/products" class="btn btn-outline-secondary">
+                            <i class="bi bi-arrow-left"></i> Back to Products
+                        </a>
+                    </div>
+
+                    <div class="alert alert-info mt-4">
+                        <i class="bi bi-info-circle"></i>
+                        <strong>Phase 1 MVP:</strong> This is a working demonstration. Cart and checkout features will
+                        be added in Phase 2.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

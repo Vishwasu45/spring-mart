@@ -1,0 +1,49 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: springmart-postgres
+    environment:
+      POSTGRES_DB: springmart
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - springmart-network
+
+  redis:
+    image: redis:7-alpine
+    container_name: springmart-redis
+    ports:
+      - "6379:6379"
+    networks:
+      - springmart-network
+
+  localstack:
+    image: localstack/localstack:latest
+    container_name: springmart-localstack
+    environment:
+      - SERVICES=s3,sqs,sns
+      - DEBUG=1
+      - DATA_DIR=/tmp/localstack/data
+      - DOCKER_HOST=unix:///var/run/docker.sock
+    ports:
+      - "4566:4566"
+      - "4510-4559:4510-4559"
+    volumes:
+      - localstack_data:/tmp/localstack
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - springmart-network
+
+volumes:
+  postgres_data:
+  localstack_data:
+
+networks:
+  springmart-network:
+    driver: bridge
