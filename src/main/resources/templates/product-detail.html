@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-    layout:decorate="~{layout}">
+    xmlns:sec="http://www.thymeleaf.org/extras/spring-security" layout:decorate="~{layout}">
 
 <head>
     <title th:text="${product.name} + ' - SpringMart'">Product Detail</title>
@@ -58,10 +58,28 @@
                     </div>
 
                     <div class="d-grid gap-2">
-                        <button class="btn btn-primary btn-lg" th:disabled="${product.stockQuantity <= 0}"
-                            onclick="alert('Cart functionality will be added in Phase 2!')">
-                            <i class="bi bi-cart-plus"></i> Add to Cart
-                        </button>
+                        <div sec:authorize="!isAuthenticated()">
+                            <a href="/login" class="btn btn-primary btn-lg w-100">
+                                <i class="bi bi-box-arrow-in-right"></i> Login to Add to Cart
+                            </a>
+                        </div>
+
+                        <div sec:authorize="isAuthenticated()">
+                            <form th:action="@{/cart/add}" method="post" id="addToCartForm">
+                                <input type="hidden" name="productId" th:value="${product.id}">
+                                <div class="input-group mb-3">
+                                    <span class="input-group-text">Quantity:</span>
+                                    <input type="number" name="quantity" value="1" min="1"
+                                        th:max="${product.stockQuantity}" class="form-control"
+                                        style="max-width: 100px;">
+                                </div>
+                                <button type="submit" class="btn btn-primary btn-lg w-100"
+                                    th:disabled="${product.stockQuantity <= 0}">
+                                    <i class="bi bi-cart-plus"></i> Add to Cart
+                                </button>
+                            </form>
+                        </div>
+
                         <a href="/products" class="btn btn-outline-secondary">
                             <i class="bi bi-arrow-left"></i> Back to Products
                         </a>
@@ -69,8 +87,8 @@
 
                     <div class="alert alert-info mt-4">
                         <i class="bi bi-info-circle"></i>
-                        <strong>Phase 1 MVP:</strong> This is a working demonstration. Cart and checkout features will
-                        be added in Phase 2.
+                        <strong>Phase 1 MVP:</strong> This is a working demonstration. Cart and checkout features
+                        will be added in Phase 2.
                     </div>
                 </div>
             </div>

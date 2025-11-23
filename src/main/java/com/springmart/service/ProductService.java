@@ -44,7 +44,6 @@ public class ProductService {
         return convertToDTO(product);
     }
 
-    @Cacheable(value = "products", key = "'all-' + #pageable.pageNumber")
     public Page<ProductDTO> getAllActiveProducts(Pageable pageable) {
         return productRepository.findByIsActiveTrue(pageable)
                 .map(this::convertToDTO);

@@ -40,6 +40,12 @@ public class CartService {
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 
+    public Integer getCartItemCount(Long userId) {
+        return cartItemRepository.findByUserId(userId).stream()
+                .mapToInt(CartItem::getQuantity)
+                .sum();
+    }
+
     @Transactional
     public CartItemDTO addToCart(Long userId, Long productId, Integer quantity) {
         User user = userRepository.findById(userId)

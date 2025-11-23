@@ -53,7 +53,7 @@ public class CartController {
         return ResponseEntity.status(HttpStatus.CREATED).body(added);
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("/items/{id}")
     @Operation(summary = "Update cart item quantity")
     public ResponseEntity<CartItemDTO> updateCartItem(
             @PathVariable Long id,
@@ -62,7 +62,7 @@ public class CartController {
         return ResponseEntity.ok(cartService.updateCartItem(id, quantity));
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/items/{id}")
     @Operation(summary = "Remove item from cart")
     public ResponseEntity<Void> removeFromCart(@PathVariable Long id) {
         cartService.removeFromCart(id);

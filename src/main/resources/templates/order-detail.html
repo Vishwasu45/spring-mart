@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+    layout:decorate="~{layout}">
+
+<head>
+    <title>Order Details - SpringMart</title>
+</head>
+
+<body>
+    <div layout:fragment="content">
+        <div class="container my-5">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1>
+                    <i class="bi bi-receipt"></i> Order Details
+                </h1>
+                <a href="/orders" class="btn btn-outline-secondary">
+                    <i class="bi bi-arrow-left"></i> Back to Orders
+                </a>
+            </div>
+
+            <div class="row">
+                <div class="col-lg-8">
+                    <!-- Order Info -->
+                    <div class="card mb-4">
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <h5>Order Number</h5>
+                                    <p th:text="${order.orderNumber}">ORDER-001</p>
+                                </div>
+                                <div class="col-md-6">
+                                    <h5>Order Date</h5>
+                                    <p th:text="${#temporals.format(order.createdAt, 'MMM dd, yyyy HH:mm')}">Jan 01, 2024</p>
+                                </div>
+                                <div class="col-md-6">
+                                    <h5>Status</h5>
+                                    <p>
+                                        <span class="badge"
+                                              th:classappend="${order.status.name() == 'PENDING' ? 'bg-warning' :
+                                                              order.status.name() == 'PROCESSING' ? 'bg-info' :
+                                                              order.status.name() == 'SHIPPED' ? 'bg-primary' :
+                                                              order.status.name() == 'DELIVERED' ? 'bg-success' :
+                                                              'bg-danger'}"
+                                              th:text="${order.status.name()}">
+                                            Status
+                                        </span>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Shipping Information -->
+                    <div class="card mb-4">
+                        <div class="card-body">
+                            <h5 class="card-title">Shipping Information</h5>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <h6>Shipping Address</h6>
+                                    <p th:text="${order.shippingAddress}">Shipping Address</p>
+                                </div>
+                                <div class="col-md-6">
+                                    <h6>Billing Address</h6>
+                                    <p th:text="${order.billingAddress}">Billing Address</p>
+                                </div>
+                            </div>
+                            <div th:if="${order.notes != null && !order.notes.isEmpty()}">
+                                <h6>Order Notes</h6>
+                                <p th:text="${order.notes}">Notes</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Order Items -->
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">Order Items</h5>
+                            <div class="table-responsive">
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th>Product</th>
+                                            <th class="text-center">Quantity</th>
+                                            <th class="text-end">Price</th>
+                                            <th class="text-end">Subtotal</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr th:each="item : ${order.items}">
+                                            <td>
+                                                <div class="d-flex align-items-center">
+                                                    <img th:src="${item.productImageUrl != null ? item.productImageUrl : 'https://via.placeholder.com/50'}"
+                                                        class="img-thumbnail me-2" style="width: 50px; height: 50px;"
+                                                        th:alt="${item.productName}">
+                                                    <span th:text="${item.productName}">Product Name</span>
+                                                </div>
+                                            </td>
+                                            <td class="text-center" th:text="${item.quantity}">1</td>
+                                            <td class="text-end">
+                                                $<span th:text="${#numbers.formatDecimal(item.price, 1, 2)}">0.00</span>
+                                            </td>
+                                            <td class="text-end">
+                                                $<span th:text="${#numbers.formatDecimal(item.subtotal, 1, 2)}">0.00</span>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-4">
+                    <!-- Order Summary -->
+                    <div class="card mb-4">
+                        <div class="card-body">
+                            <h5 class="card-title">Order Summary</h5>
+                            <hr>
+                            <div class="d-flex justify-content-between mb-2">
+                                <span>Subtotal:</span>
+                                <span>$<span th:text="${#numbers.formatDecimal(order.subtotal, 1, 2)}">0.00</span></span>
+                            </div>
+                            <div class="d-flex justify-content-between mb-2">
+                                <span>Tax:</span>
+                                <span>$<span th:text="${#numbers.formatDecimal(order.tax, 1, 2)}">0.00</span></span>
+                            </div>
+                            <div class="d-flex justify-content-between mb-2">
+                                <span>Shipping:</span>
+                                <span>$<span th:text="${#numbers.formatDecimal(order.shippingCost, 1, 2)}">0.00</span></span>
+                            </div>
+                            <hr>
+                            <div class="d-flex justify-content-between mb-3">
+                                <h5>Total:</h5>
+                                <h5>$<span th:text="${#numbers.formatDecimal(order.totalAmount, 1, 2)}">0.00</span></h5>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Order Actions -->
+                    <div class="card" th:if="${order.status.name() == 'PENDING'}">
+                        <div class="card-body">
+                            <h5 class="card-title">Order Actions</h5>
+                            <button class="btn btn-danger w-100" onclick="cancelOrder()">
+                                <i class="bi bi-x-circle"></i> Cancel Order
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <th:block layout:fragment="scripts">
+        <script th:inline="javascript">
+            function cancelOrder() {
+                if (!confirm('Are you sure you want to cancel this order?')) {
+                    return;
+                }
+
+                const orderId = /*[[${order.id}]]*/ 0;
+
+                fetch(`/api/orders/${orderId}`, {
+                    method: 'DELETE'
+                })
+                .then(response => {
+                    if (response.ok) {
+                        alert('Order cancelled successfully');
+                        location.reload();
+                    } else {
+                        alert('Failed to cancel order');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Failed to cancel order');
+                });
+            }
+        </script>
+    </th:block>
+</body>
+
+</html>
+

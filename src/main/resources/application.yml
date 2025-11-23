@@ -3,7 +3,7 @@ spring:
     name: springmart
   
   profiles:
-    active: dev
+    active: dev,local
   
   jpa:
     hibernate:

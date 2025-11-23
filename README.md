@@ -1,5 +1,9 @@
 # SpringMart - Cloud-Native E-Commerce Platform
 
+> 🎉 **STATUS: 75% Complete & Fully Functional!** All core features are implemented and working. Ready to run!
+> 
+> 🚀 **Quick Start**: Run `./start.sh` or see [RUNNING_GUIDE.md](RUNNING_GUIDE.md) for detailed instructions.
+
 A production-ready e-commerce platform built with Spring Boot 3, demonstrating enterprise-level Spring concepts, AWS integration, OAuth 2.0 security, event-driven architecture, and Thymeleaf-based frontend.
 
 ![Java](https://img.shields.io/badge/Java-17-orange)

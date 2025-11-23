@@ -39,7 +39,12 @@ public class CustomOAuth2User implements OAuth2User {
         return user.getId();
     }
 
-    public String getEmail() {
-        return user.getEmail();
+    public Long getId() {
+        return user.getId();
+    }
+
+    public boolean hasRole(String roleName) {
+        return user.getRoles().stream()
+                .anyMatch(role -> role.getName().equals("ROLE_" + roleName) || role.getName().equals(roleName));
     }
 }

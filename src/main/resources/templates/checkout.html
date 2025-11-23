@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+    layout:decorate="~{layout}">
+
+<head>
+    <title>Checkout - SpringMart</title>
+</head>
+
+<body>
+    <div layout:fragment="content">
+        <div class="container my-5">
+            <h1 class="mb-4">
+                <i class="bi bi-credit-card"></i> Checkout
+            </h1>
+
+            <div th:if="${cartItems.empty}">
+                <div class="alert alert-warning">
+                    Your cart is empty. <a href="/products">Continue shopping</a>
+                </div>
+            </div>
+
+            <div th:unless="${cartItems.empty}">
+                <div class="row">
+                    <div class="col-lg-8">
+                        <div class="card mb-4">
+                            <div class="card-body">
+                                <h4 class="card-title">Shipping Information</h4>
+                                <form id="checkoutForm">
+                                    <div class="mb-3" th:if="${!savedAddresses.empty}">
+                                        <label class="form-label">Saved Addresses</label>
+                                        <select class="form-select" id="savedAddressSelect"
+                                            onchange="loadAddress(this.value)">
+                                            <option value="">-- Select a saved address --</option>
+                                            <option th:each="addr : ${savedAddresses}" th:value="${addr.id}"
+                                                th:data-street="${addr.street}" th:data-city="${addr.city}"
+                                                th:data-state="${addr.state}" th:data-zip="${addr.zipCode}"
+                                                th:data-country="${addr.country}"
+                                                th:text="${addr.street + ', ' + addr.city}">
+                                                123 Main St
+                                            </option>
+                                        </select>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label for="shippingAddress" class="form-label">Street Address *</label>
+                                        <textarea class="form-control" id="shippingAddress" name="shippingAddress"
+                                            rows="2" required placeholder="123 Main Street, Apt 4B"></textarea>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-6 mb-3">
+                                            <label for="shippingCity" class="form-label">City *</label>
+                                            <input type="text" class="form-control" id="shippingCity"
+                                                name="shippingCity" required placeholder="San Francisco">
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <label for="shippingState" class="form-label">State/Province *</label>
+                                            <input type="text" class="form-control" id="shippingState"
+                                                name="shippingState" required placeholder="CA">
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-6 mb-3">
+                                            <label for="shippingZip" class="form-label">ZIP/Postal Code *</label>
+                                            <input type="text" class="form-control" id="shippingZip" name="shippingZip"
+                                                required placeholder="94102">
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <label for="shippingCountry" class="form-label">Country *</label>
+                                            <input type="text" class="form-control" id="shippingCountry"
+                                                name="shippingCountry" required placeholder="USA">
+                                        </div>
+                                    </div>
+                                    <div class="form-check mb-3">
+                                        <input class="form-check-input" type="checkbox" id="saveAddressCheck">
+                                        <label class="form-check-label" for="saveAddressCheck">
+                                            Save this address for future orders
+                                        </label>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+
+                        <div class="card">
+                            <div class="card-body">
+                                <h4 class="card-title">Order Items</h4>
+                                <div class="table-responsive">
+                                    <table class="table">
+                                        <thead>
+                                            <tr>
+                                                <th>Product</th>
+                                                <th class="text-center">Quantity</th>
+                                                <th class="text-end">Price</th>
+                                                <th class="text-end">Subtotal</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr th:each="item : ${cartItems}">
+                                                <td>
+                                                    <div class="d-flex align-items-center">
+                                                        <img th:src="${item.productImageUrl != null ? item.productImageUrl : 'https://via.placeholder.com/50'}"
+                                                            class="img-thumbnail me-2"
+                                                            style="width: 50px; height: 50px;"
+                                                            th:alt="${item.productName}">
+                                                        <span th:text="${item.productName}">Product Name</span>
+                                                    </div>
+                                                </td>
+                                                <td class="text-center" th:text="${item.quantity}">1</td>
+                                                <td class="text-end">
+                                                    $<span
+                                                        th:text="${#numbers.formatDecimal(item.productPrice, 1, 2)}">0.00</span>
+                                                </td>
+                                                <td class="text-end">
+                                                    $<span
+                                                        th:text="${#numbers.formatDecimal(item.subtotal, 1, 2)}">0.00</span>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-4">
+                        <div class="card">
+                            <div class="card-body">
+                                <h4 class="card-title">Order Summary</h4>
+                                <hr>
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span>Subtotal:</span>
+                                    <strong>$<span
+                                            th:text="${#numbers.formatDecimal(cartTotal, 1, 2)}">0.00</span></strong>
+                                </div>
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span>Tax (10%):</span>
+                                    <span>$<span
+                                            th:text="${#numbers.formatDecimal(cartTotal * 0.10, 1, 2)}">0.00</span></span>
+                                </div>
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span>Shipping:</span>
+                                    <span>$10.00</span>
+                                </div>
+                                <hr>
+                                <div class="d-flex justify-content-between mb-3">
+                                    <h5>Total:</h5>
+                                    <h5>$<span
+                                            th:text="${#numbers.formatDecimal(cartTotal * 1.10 + 10, 1, 2)}">0.00</span>
+                                    </h5>
+                                </div>
+                                <button type="button" class="btn btn-primary w-100" onclick="initiatePayment()">
+                                    <i class="bi bi-credit-card"></i> Proceed to Payment
+                                </button>
+                                <a href="/cart" class="btn btn-outline-secondary w-100 mt-2">
+                                    <i class="bi bi-arrow-left"></i> Back to Cart
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Payment Modal -->
+        <div class="modal fade" id="paymentModal" tabindex="-1" aria-labelledby="paymentModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="paymentModalLabel"><i class="bi bi-shield-lock-fill"></i> Secure
+                            Payment
+                        </h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="mb-3" th:if="${!savedCards.empty}">
+                            <label class="form-label">Saved Cards</label>
+                            <select class="form-select" id="savedCardSelect" onchange="loadCard(this.value)">
+                                <option value="">-- Select a saved card --</option>
+                                <option th:each="card : ${savedCards}" th:value="${card.id}"
+                                    th:data-last4="${card.last4}" th:data-brand="${card.brand}"
+                                    th:text="${card.brand + ' ending in ' + card.last4}">
+                                    Visa ending in 1234
+                                </option>
+                                <option value="new">Use a new card</option>
+                            </select>
+                        </div>
+
+                        <div id="newCardForm">
+                            <div class="mb-3">
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <label class="form-label mb-0">Card Information</label>
+                                    <div class="text-muted">
+                                        <i class="bi bi-credit-card-2-front fs-5"></i>
+                                        <i class="bi bi-credit-card-2-back fs-5 ms-1"></i>
+                                    </div>
+                                </div>
+                                <div class="input-group mb-3">
+                                    <span class="input-group-text"><i class="bi bi-credit-card"></i></span>
+                                    <input type="text" class="form-control" placeholder="Card number"
+                                        aria-label="Card number" id="cardNumber" maxlength="19">
+                                </div>
+                                <div class="row">
+                                    <div class="col-6">
+                                        <div class="input-group mb-3">
+                                            <span class="input-group-text"><i class="bi bi-calendar-event"></i></span>
+                                            <input type="text" class="form-control" placeholder="MM/YY"
+                                                aria-label="Expiration" id="cardExpiry" maxlength="5">
+                                        </div>
+                                    </div>
+                                    <div class="col-6">
+                                        <div class="input-group mb-3">
+                                            <span class="input-group-text"><i class="bi bi-lock"></i></span>
+                                            <input type="text" class="form-control" placeholder="CVC" aria-label="CVC"
+                                                id="cardCvc" maxlength="4">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="input-group mb-3">
+                                    <span class="input-group-text"><i class="bi bi-person"></i></span>
+                                    <input type="text" class="form-control" placeholder="Cardholder Name"
+                                        aria-label="Cardholder Name" id="cardHolder">
+                                </div>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="bi bi-geo-alt"></i></span>
+                                    <input type="text" class="form-control" placeholder="ZIP Code" aria-label="ZIP Code"
+                                        id="cardZip">
+                                </div>
+                            </div>
+                            <div class="form-check mb-3">
+                                <input class="form-check-input" type="checkbox" id="saveCardCheck">
+                                <label class="form-check-label" for="saveCardCheck">
+                                    Save this card for future orders
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="alert alert-info small mb-0">
+                            <i class="bi bi-info-circle"></i> This is a secure 256-bit SSL encrypted payment.
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="button" class="btn btn-primary w-100" onclick="processPayment()" id="payButton">
+                            Pay $<span th:text="${#numbers.formatDecimal(cartTotal * 1.10 + 10, 1, 2)}">0.00</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <th:block layout:fragment="scripts">
+        <script>
+            // Format Card Number
+            const cardNumberInput = document.getElementById('cardNumber');
+            if (cardNumberInput) {
+                cardNumberInput.addEventListener('input', function (e) {
+                    let value = e.target.value.replace(/\D/g, '');
+                    value = value.replace(/(.{4})/g, '$1 ').trim();
+                    e.target.value = value;
+                });
+            }
+
+            // Format Expiry Date
+            const cardExpiryInput = document.getElementById('cardExpiry');
+            if (cardExpiryInput) {
+                cardExpiryInput.addEventListener('input', function (e) {
+                    let value = e.target.value.replace(/\D/g, '');
+                    if (value.length >= 2) {
+                        value = value.substring(0, 2) + '/' + value.substring(2);
+                    }
+                    e.target.value = value;
+                });
+            }
+
+            function loadAddress(id) {
+                if (!id) {
+                    document.getElementById('checkoutForm').reset();
+                    return;
+                }
+
+                const select = document.getElementById('savedAddressSelect');
+                const option = select.options[select.selectedIndex];
+
+                document.getElementById('shippingAddress').value = option.dataset.street;
+                document.getElementById('shippingCity').value = option.dataset.city;
+                document.getElementById('shippingState').value = option.dataset.state;
+                document.getElementById('shippingZip').value = option.dataset.zip;
+                document.getElementById('shippingCountry').value = option.dataset.country;
+            }
+
+            function loadCard(id) {
+                const newCardForm = document.getElementById('newCardForm');
+                if (id === 'new' || !id) {
+                    newCardForm.style.display = 'block';
+                    return;
+                }
+                newCardForm.style.display = 'none';
+            }
+
+            function initiatePayment() {
+                const form = document.getElementById('checkoutForm');
+                if (!form.checkValidity()) {
+                    form.reportValidity();
+                    return;
+                }
+
+                // Show payment modal
+                const paymentModal = new bootstrap.Modal(document.getElementById('paymentModal'));
+                paymentModal.show();
+            }
+
+            function processPayment() {
+                const payButton = document.getElementById('payButton');
+                const originalBtnText = payButton.innerHTML;
+                const savedCardId = document.getElementById('savedCardSelect') ? document.getElementById('savedCardSelect').value : null;
+
+                if (!savedCardId || savedCardId === 'new') {
+                    // Validate new card details
+                    const cardNumber = document.getElementById('cardNumber').value.replace(/\s/g, '');
+                    const cardExpiry = document.getElementById('cardExpiry').value;
+                    const cardCvc = document.getElementById('cardCvc').value;
+
+                    if (cardNumber.length < 15 || cardExpiry.length < 5 || cardCvc.length < 3) {
+                        alert('Please enter valid card details.');
+                        return;
+                    }
+                }
+
+                payButton.disabled = true;
+                payButton.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Processing...';
+
+                // Simulate Stripe processing delay
+                setTimeout(() => {
+                    submitOrder(payButton, originalBtnText);
+                }, 2000);
+            }
+
+            function submitOrder(payButton, originalBtnText) {
+                // Check if we need to save address or card
+                const saveAddress = document.getElementById('saveAddressCheck') && document.getElementById('saveAddressCheck').checked;
+                const saveCard = document.getElementById('saveCardCheck') && document.getElementById('saveCardCheck').checked;
+
+                const promises = [];
+
+                if (saveAddress) {
+                    const addressData = {
+                        street: document.getElementById('shippingAddress').value,
+                        city: document.getElementById('shippingCity').value,
+                        state: document.getElementById('shippingState').value,
+                        zipCode: document.getElementById('shippingZip').value,
+                        country: document.getElementById('shippingCountry').value,
+                        isDefault: false
+                    };
+                    promises.push(fetch('/api/profile/addresses', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(addressData)
+                    }));
+                }
+
+                if (saveCard) {
+                    const cardNumber = document.getElementById('cardNumber').value.replace(/\s/g, '');
+                    const expiry = document.getElementById('cardExpiry').value.split('/');
+                    const cardData = {
+                        last4: cardNumber.slice(-4),
+                        brand: getCardBrand(cardNumber),
+                        expiryMonth: expiry[0],
+                        expiryYear: expiry[1],
+                        holderName: document.getElementById('cardHolder').value,
+                        isDefault: false
+                    };
+                    promises.push(fetch('/api/profile/cards', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(cardData)
+                    }));
+                }
+
+                Promise.all(promises).then(() => {
+                    const form = document.getElementById('checkoutForm');
+                    const formData = new FormData(form);
+                    const orderData = {
+                        shippingAddress: formData.get('shippingAddress'),
+                        shippingCity: formData.get('shippingCity'),
+                        shippingState: formData.get('shippingState'),
+                        shippingZip: formData.get('shippingZip'),
+                        shippingCountry: formData.get('shippingCountry')
+                    };
+
+                    return fetch('/api/orders', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(orderData)
+                    });
+                })
+                    .then(response => {
+                        if (response.ok) {
+                            return response.json();
+                        } else {
+                            return response.text().then(text => { throw new Error(text || 'Failed to place order') });
+                        }
+                    })
+                    .then(order => {
+                        // Hide modal
+                        const paymentModalEl = document.getElementById('paymentModal');
+                        const modal = bootstrap.Modal.getInstance(paymentModalEl);
+                        modal.hide();
+
+                        window.location.href = '/orders/' + order.id;
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        alert('Failed to place order: ' + error.message);
+                        payButton.disabled = false;
+                        payButton.innerHTML = originalBtnText;
+                    });
+            }
+
+            function getCardBrand(number) {
+                if (number.startsWith('4')) return 'Visa';
+                if (number.startsWith('5')) return 'Mastercard';
+                if (number.startsWith('3')) return 'Amex';
+                return 'Card';
+            }
+        </script>
+    </th:block>
+</body>
+
+</html>
