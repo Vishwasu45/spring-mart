@@ -33,4 +33,12 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     @Query("SELECT p FROM Product p LEFT JOIN p.reviews r WHERE p.isActive = true " +
             "GROUP BY p.id ORDER BY AVG(r.rating) DESC")
     List<Product> findTopRatedProducts(Pageable pageable);
+
+    @Query("SELECT p FROM Product p WHERE p.isFeatured = true AND p.isActive = true ORDER BY p.createdAt DESC")
+    List<Product> findFeaturedProducts(Pageable pageable);
+
+    @Query("SELECT p FROM Product p WHERE p.discountPercentage > 0 AND p.isActive = true ORDER BY p.discountPercentage DESC")
+    List<Product> findProductsOnSale(Pageable pageable);
+
+    long countByCategoryIdAndIsActiveTrue(Long categoryId);
 }

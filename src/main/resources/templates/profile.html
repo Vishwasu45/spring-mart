@@ -15,7 +15,7 @@
                     <div class="card shadow-sm">
                         <div class="card-body text-center">
                             <div class="mb-3">
-                                <img th:src="${user.imageUrl != null ? user.imageUrl : 'https://ui-avatars.com/api/?name=' + user.name + '&background=random'}"
+                                <img th:src="${user.imageUrl != null and !#strings.isEmpty(user.imageUrl)} ? ${user.imageUrl} : ${'https://ui-avatars.com/api/?name=' + #strings.replace(user.name, ' ', '+') + '&amp;background=random'}"
                                     class="rounded-circle img-thumbnail" alt="Profile Picture"
                                     style="width: 100px; height: 100px; object-fit: cover;">
                             </div>

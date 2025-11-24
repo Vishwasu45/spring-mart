@@ -2,6 +2,7 @@ package com.springmart.controller.view;
 
 import com.springmart.security.CustomOAuth2User;
 import com.springmart.service.OrderService;
+import com.springmart.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 public class OrderViewController {
 
     private final OrderService orderService;
+    private final UserService userService;
 
     @GetMapping
     public String myOrders(
@@ -29,7 +31,9 @@ public class OrderViewController {
             return "redirect:/login";
         }
 
-        model.addAttribute("orders", orderService.getUserOrders(currentUser.getId(), pageable));
+        Long userId = currentUser.getId();
+        model.addAttribute("orders", orderService.getUserOrders(userId, pageable));
+        model.addAttribute("user", userService.getUserById(userId));
         return "orders";
     }
 

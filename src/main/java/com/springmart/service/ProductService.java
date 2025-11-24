@@ -73,6 +73,20 @@ public class ProductService {
                 .collect(Collectors.toList());
     }
 
+    public List<ProductDTO> getFeaturedProducts(int limit) {
+        return productRepository.findFeaturedProducts(Pageable.ofSize(limit))
+                .stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
+    }
+
+    public List<ProductDTO> getFlashDeals(int limit) {
+        return productRepository.findProductsOnSale(Pageable.ofSize(limit))
+                .stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
+    }
+
     @Transactional
     @CacheEvict(value = "products", allEntries = true)
     public ProductDTO createProduct(ProductDTO productDTO, Long sellerId) {
@@ -177,6 +191,8 @@ public class ProductService {
                 .sku(product.getSku())
                 .slug(product.getSlug())
                 .isActive(product.getIsActive())
+                .isFeatured(product.getIsFeatured())
+                .discountPercentage(product.getDiscountPercentage())
                 .imageUrls(imageUrls)
                 .primaryImageUrl(primaryImageUrl)
                 .averageRating(product.getAverageRating())

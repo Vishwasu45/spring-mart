@@ -8,32 +8,178 @@
 
 <body>
     <div layout:fragment="content">
-        <!-- Hero Section -->
-        <div class="bg-primary text-white py-5">
-            <div class="container">
-                <div class="row align-items-center">
-                    <div class="col-lg-6">
-                        <h1 class="display-4 fw-bold">Welcome to SpringMart</h1>
-                        <p class="lead">Your one-stop shop for quality products. Built with Spring Boot, demonstrating
-                            enterprise-level architecture.</p>
-                        <a href="/products" class="btn btn-light btn-lg mt-3">
-                            <i class="bi bi-shop"></i> Browse Products
-                        </a>
+        <!-- Hero Carousel Section -->
+        <div id="heroCarousel" class="carousel slide" data-bs-ride="carousel">
+            <div class="carousel-indicators">
+                <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="0" class="active"></button>
+                <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="1"></button>
+                <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="2"></button>
+            </div>
+            <div class="carousel-inner">
+                <div class="carousel-item active">
+                    <div class="hero-slide hero-slide-1">
+                        <div class="container">
+                            <div class="row align-items-center py-5">
+                                <div class="col-lg-6 text-white">
+                                    <h1 class="display-4 fw-bold">Welcome to SpringMart</h1>
+                                    <p class="lead mb-4">Your one-stop shop for quality products at unbeatable prices!</p>
+                                    <a href="/products" class="btn btn-light btn-lg me-2">
+                                        <i class="bi bi-shop"></i> Shop Now
+                                    </a>
+                                    <a href="#flash-deals" class="btn btn-outline-light btn-lg">
+                                        <i class="bi bi-lightning-fill"></i> View Deals
+                                    </a>
+                                </div>
+                                <div class="col-lg-6 text-center d-none d-lg-block">
+                                    <i class="bi bi-cart-check" style="font-size: 10rem; opacity: 0.3; color: white;"></i>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    <div class="col-lg-6 text-center">
-                        <i class="bi bi-cart-check" style="font-size: 10rem; opacity: 0.3;"></i>
+                </div>
+                <div class="carousel-item">
+                    <div class="hero-slide hero-slide-2">
+                        <div class="container">
+                            <div class="row align-items-center py-5">
+                                <div class="col-lg-6 text-white">
+                                    <h1 class="display-4 fw-bold">Flash Sale!</h1>
+                                    <p class="lead mb-4">Up to 30% off on selected items. Limited time offer!</p>
+                                    <a href="#flash-deals" class="btn btn-warning btn-lg">
+                                        <i class="bi bi-lightning-fill"></i> Grab Deals Now
+                                    </a>
+                                </div>
+                                <div class="col-lg-6 text-center d-none d-lg-block">
+                                    <i class="bi bi-lightning-charge" style="font-size: 10rem; opacity: 0.3; color: white;"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="carousel-item">
+                    <div class="hero-slide hero-slide-3">
+                        <div class="container">
+                            <div class="row align-items-center py-5">
+                                <div class="col-lg-6 text-white">
+                                    <h1 class="display-4 fw-bold">Free Shipping</h1>
+                                    <p class="lead mb-4">On orders over $50. Shop now and save!</p>
+                                    <a href="/products" class="btn btn-success btn-lg">
+                                        <i class="bi bi-truck"></i> Start Shopping
+                                    </a>
+                                </div>
+                                <div class="col-lg-6 text-center d-none d-lg-block">
+                                    <i class="bi bi-truck" style="font-size: 10rem; opacity: 0.3; color: white;"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <button class="carousel-control-prev" type="button" data-bs-target="#heroCarousel" data-bs-slide="prev">
+                <span class="carousel-control-prev-icon"></span>
+                <span class="visually-hidden">Previous</span>
+            </button>
+            <button class="carousel-control-next" type="button" data-bs-target="#heroCarousel" data-bs-slide="next">
+                <span class="carousel-control-next-icon"></span>
+                <span class="visually-hidden">Next</span>
+            </button>
+        </div>
+
+        <!-- Enhanced Categories Section -->
+        <div class="container my-5">
+            <h2 class="text-center mb-4">Shop by Category</h2>
+            <div class="row g-4">
+                <div class="col-md-4 col-lg-3" th:each="category : ${categories}">
+                    <a th:href="@{/products(categoryId=${category.id})}" class="category-card">
+                        <div class="card h-100 border-0 shadow-sm">
+                            <div class="card-body text-center p-4">
+                                <div class="category-icon mb-3">
+                                    <i class="bi bi-tag-fill text-primary" style="font-size: 3rem;"></i>
+                                </div>
+                                <h5 class="card-title mb-2" th:text="${category.name}">Category</h5>
+                                <p class="text-muted small mb-0">
+                                    <span th:text="${category.productCount}">0</span> products
+                                </p>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Flash Deals Section -->
+        <div class="container my-5" id="flash-deals" th:if="${flashDeals != null and !flashDeals.isEmpty()}">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2 class="mb-0">
+                    <i class="bi bi-lightning-fill text-warning"></i> Flash Deals
+                </h2>
+                <span class="badge bg-danger fs-6">Limited Time!</span>
+            </div>
+            <div class="row g-4">
+                <div class="col-md-4 col-lg-2" th:each="product : ${flashDeals}">
+                    <div class="card product-card h-100">
+                        <div class="position-relative">
+                            <img th:src="${product.primaryImageUrl != null ? product.primaryImageUrl : 'https://via.placeholder.com/300x200?text=' + product.name}"
+                                class="card-img-top product-image" th:alt="${product.name}">
+                            <span class="position-absolute top-0 start-0 badge bg-danger m-2"
+                                  th:if="${product.discountPercentage > 0}">
+                                <span th:text="${product.discountPercentage + '%'}">20%</span> OFF
+                            </span>
+                        </div>
+                        <div class="card-body d-flex flex-column">
+                            <h6 class="card-title" th:text="${product.name}">Product Name</h6>
+                            <div class="mt-auto">
+                                <div class="mb-2" th:if="${product.discountPercentage > 0}">
+                                    <span class="h5 mb-0 text-danger" th:text="'$' + ${#numbers.formatDecimal(product.price * (100 - product.discountPercentage) / 100, 1, 2)}">$79.99</span>
+                                    <small class="text-muted text-decoration-line-through ms-1" th:text="'$' + ${product.price}">$99.99</small>
+                                </div>
+                                <div class="mb-2" th:unless="${product.discountPercentage > 0}">
+                                    <span class="h5 mb-0 text-primary" th:text="'$' + ${product.price}">$99.99</span>
+                                </div>
+                                <a th:href="@{/products/{slug}(slug=${product.slug})}" class="btn btn-sm btn-danger w-100">
+                                    <i class="bi bi-lightning-fill"></i> Grab Now
+                                </a>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Categories Section -->
-        <div class="container my-5">
-            <h2 class="text-center mb-4">Shop by Category</h2>
-            <div class="row g-3 justify-content-center">
-                <div class="col-auto" th:each="category : ${categories}">
-                    <a th:href="@{/products(categoryId=${category.id})}" class="category-badge"
-                        th:text="${category.name}">Category</a>
+        <!-- Featured Products Section -->
+        <div class="container my-5" th:if="${featuredProducts != null and !featuredProducts.isEmpty()}">
+            <h2 class="mb-4">
+                <i class="bi bi-star-fill text-warning"></i> Featured Products
+            </h2>
+            <div class="row g-4">
+                <div class="col-md-6 col-lg-3" th:each="product : ${featuredProducts}">
+                    <div class="card product-card h-100">
+                        <div class="position-relative">
+                            <img th:src="${product.primaryImageUrl != null ? product.primaryImageUrl : 'https://via.placeholder.com/300x200?text=' + product.name}"
+                                class="card-img-top product-image" th:alt="${product.name}">
+                            <span class="position-absolute top-0 end-0 badge bg-primary m-2">
+                                <i class="bi bi-star-fill"></i> Featured
+                            </span>
+                        </div>
+                        <div class="card-body d-flex flex-column">
+                            <h5 class="card-title" th:text="${product.name}">Product Name</h5>
+                            <p class="card-text text-muted small"
+                                th:text="${#strings.abbreviate(product.description, 80)}">Description</p>
+                            <div class="mt-auto">
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <span class="h5 mb-0 text-primary" th:text="'$' + ${product.price}">$99.99</span>
+                                    <span class="badge bg-secondary" th:text="${product.categoryName}">Category</span>
+                                </div>
+                                <div class="mb-2" th:if="${product.averageRating > 0}">
+                                    <i class="bi bi-star-fill text-warning"></i>
+                                    <span th:text="${#numbers.formatDecimal(product.averageRating, 1, 1)}">4.5</span>
+                                    <small class="text-muted" th:text="'(' + ${product.reviewCount} + ')'"></small>
+                                </div>
+                                <a th:href="@{/products/{slug}(slug=${product.slug})}" class="btn btn-primary w-100">
+                                    View Details
+                                </a>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -109,6 +255,192 @@
             </div>
         </div>
 
+        <!-- Customer Testimonials Section -->
+        <div class="container my-5">
+            <h2 class="text-center mb-4">What Our Customers Say</h2>
+            <div id="testimonialsCarousel" class="carousel slide" data-bs-ride="carousel">
+                <div class="carousel-inner">
+                    <div class="carousel-item active">
+                        <div class="row justify-content-center">
+                            <div class="col-lg-8">
+                                <div class="testimonial-card text-center p-5">
+                                    <i class="bi bi-quote text-primary" style="font-size: 3rem;"></i>
+                                    <p class="lead mt-3">"Excellent service and fast delivery! The products are exactly as described. I highly recommend SpringMart for all your shopping needs."</p>
+                                    <div class="mt-3">
+                                        <i class="bi bi-star-fill text-warning"></i>
+                                        <i class="bi bi-star-fill text-warning"></i>
+                                        <i class="bi bi-star-fill text-warning"></i>
+                                        <i class="bi bi-star-fill text-warning"></i>
+                                        <i class="bi bi-star-fill text-warning"></i>
+                                    </div>
+                                    <h5 class="mt-3 mb-0">Sarah Johnson</h5>
+                                    <small class="text-muted">Verified Customer</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="carousel-item">
+                        <div class="row justify-content-center">
+                            <div class="col-lg-8">
+                                <div class="testimonial-card text-center p-5">
+                                    <i class="bi bi-quote text-primary" style="font-size: 3rem;"></i>
+                                    <p class="lead mt-3">"Great quality products at competitive prices. The customer support team is very responsive and helpful. Will definitely shop again!"</p>
+                                    <div class="mt-3">
+                                        <i class="bi bi-star-fill text-warning"></i>
+                                        <i class="bi bi-star-fill text-warning"></i>
+                                        <i class="bi bi-star-fill text-warning"></i>
+                                        <i class="bi bi-star-fill text-warning"></i>
+                                        <i class="bi bi-star-fill text-warning"></i>
+                                    </div>
+                                    <h5 class="mt-3 mb-0">Michael Chen</h5>
+                                    <small class="text-muted">Verified Customer</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="carousel-item">
+                        <div class="row justify-content-center">
+                            <div class="col-lg-8">
+                                <div class="testimonial-card text-center p-5">
+                                    <i class="bi bi-quote text-primary" style="font-size: 3rem;"></i>
+                                    <p class="lead mt-3">"Love the user-friendly website and seamless checkout process. The flash deals are amazing! Best online shopping experience I've had."</p>
+                                    <div class="mt-3">
+                                        <i class="bi bi-star-fill text-warning"></i>
+                                        <i class="bi bi-star-fill text-warning"></i>
+                                        <i class="bi bi-star-fill text-warning"></i>
+                                        <i class="bi bi-star-fill text-warning"></i>
+                                        <i class="bi bi-star-half text-warning"></i>
+                                    </div>
+                                    <h5 class="mt-3 mb-0">Emma Williams</h5>
+                                    <small class="text-muted">Verified Customer</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <button class="carousel-control-prev" type="button" data-bs-target="#testimonialsCarousel" data-bs-slide="prev">
+                    <span class="carousel-control-prev-icon bg-primary rounded-circle p-3"></span>
+                    <span class="visually-hidden">Previous</span>
+                </button>
+                <button class="carousel-control-next" type="button" data-bs-target="#testimonialsCarousel" data-bs-slide="next">
+                    <span class="carousel-control-next-icon bg-primary rounded-circle p-3"></span>
+                    <span class="visually-hidden">Next</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Statistics Section -->
+        <div class="bg-primary text-white py-5">
+            <div class="container">
+                <div class="row text-center g-4">
+                    <div class="col-md-3">
+                        <div class="stat-item">
+                            <h2 class="display-4 fw-bold mb-0">50K+</h2>
+                            <p class="lead mb-0">Happy Customers</p>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="stat-item">
+                            <h2 class="display-4 fw-bold mb-0">10K+</h2>
+                            <p class="lead mb-0">Products Sold</p>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="stat-item">
+                            <h2 class="display-4 fw-bold mb-0">500+</h2>
+                            <p class="lead mb-0">Product Categories</p>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="stat-item">
+                            <h2 class="display-4 fw-bold mb-0">4.8★</h2>
+                            <p class="lead mb-0">Average Rating</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Newsletter Section -->
+        <div class="container my-5">
+            <div class="row justify-content-center">
+                <div class="col-lg-8">
+                    <div class="newsletter-section text-center p-5 bg-light rounded">
+                        <i class="bi bi-envelope-heart text-primary" style="font-size: 3rem;"></i>
+                        <h2 class="mt-3 mb-3">Subscribe to Our Newsletter</h2>
+                        <p class="lead text-muted mb-4">Get the latest deals and exclusive offers delivered to your inbox!</p>
+                        <form id="newsletterForm" class="row g-3 justify-content-center">
+                            <div class="col-md-8">
+                                <input type="email" class="form-control form-control-lg" id="newsletterEmail"
+                                       placeholder="Enter your email address" required>
+                            </div>
+                            <div class="col-md-4">
+                                <button type="submit" class="btn btn-primary btn-lg w-100">
+                                    <i class="bi bi-send"></i> Subscribe
+                                </button>
+                            </div>
+                        </form>
+                        <div id="newsletterMessage" class="mt-3"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Brand Showcase Section -->
+        <div class="container my-5">
+            <h2 class="text-center mb-4">Trusted Brands We Carry</h2>
+            <div class="row align-items-center g-4">
+                <div class="col-6 col-md-3 text-center">
+                    <div class="brand-logo">
+                        <i class="bi bi-apple" style="font-size: 3rem; color: #000;"></i>
+                        <p class="mt-2 mb-0 text-muted">Apple</p>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3 text-center">
+                    <div class="brand-logo">
+                        <i class="bi bi-microsoft" style="font-size: 3rem; color: #00A4EF;"></i>
+                        <p class="mt-2 mb-0 text-muted">Microsoft</p>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3 text-center">
+                    <div class="brand-logo">
+                        <i class="bi bi-nvidia" style="font-size: 3rem; color: #76B900;"></i>
+                        <p class="mt-2 mb-0 text-muted">NVIDIA</p>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3 text-center">
+                    <div class="brand-logo">
+                        <i class="bi bi-playstation" style="font-size: 3rem; color: #003791;"></i>
+                        <p class="mt-2 mb-0 text-muted">PlayStation</p>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3 text-center">
+                    <div class="brand-logo">
+                        <i class="bi bi-nintendo-switch" style="font-size: 3rem; color: #E60012;"></i>
+                        <p class="mt-2 mb-0 text-muted">Nintendo</p>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3 text-center">
+                    <div class="brand-logo">
+                        <i class="bi bi-amazon" style="font-size: 3rem; color: #FF9900;"></i>
+                        <p class="mt-2 mb-0 text-muted">Amazon</p>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3 text-center">
+                    <div class="brand-logo">
+                        <i class="bi bi-samsung" style="font-size: 3rem; color: #1428A0;"></i>
+                        <p class="mt-2 mb-0 text-muted">Samsung</p>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3 text-center">
+                    <div class="brand-logo">
+                        <i class="bi bi-google" style="font-size: 3rem; color: #4285F4;"></i>
+                        <p class="mt-2 mb-0 text-muted">Google</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- Features Section -->
         <div class="bg-light py-5 mt-5">
             <div class="container">
@@ -137,6 +469,46 @@
             </div>
         </div>
     </div>
+
+    <!-- Newsletter Subscription Script -->
+    <script th:inline="javascript">
+        document.getElementById('newsletterForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            const email = document.getElementById('newsletterEmail').value;
+            const messageDiv = document.getElementById('newsletterMessage');
+            const submitBtn = this.querySelector('button[type="submit"]');
+
+            // Disable button during submission
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Subscribing...';
+
+            try {
+                const response = await fetch('/api/newsletter/subscribe', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ email: email })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    messageDiv.innerHTML = '<div class="alert alert-success">' + data.message + '</div>';
+                    document.getElementById('newsletterEmail').value = '';
+                } else {
+                    messageDiv.innerHTML = '<div class="alert alert-danger">' + data.message + '</div>';
+                }
+            } catch (error) {
+                messageDiv.innerHTML = '<div class="alert alert-danger">An error occurred. Please try again.</div>';
+            } finally {
+                // Re-enable button
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = '<i class="bi bi-send"></i> Subscribe';
+            }
+        });
+    </script>
 </body>
 
 </html>

@@ -25,4 +25,25 @@ public class GlobalControllerAdvice {
             return 0;
         }
     }
+
+    @ModelAttribute("userFirstName")
+    public String getUserFirstName(@AuthenticationPrincipal CustomOAuth2User currentUser) {
+        if (currentUser == null) {
+            return null;
+        }
+        return currentUser.getFirstName();
+    }
+
+    @ModelAttribute("userProfileImage")
+    public String getUserProfileImage(@AuthenticationPrincipal CustomOAuth2User currentUser) {
+        if (currentUser == null) {
+            return null;
+        }
+        String imageUrl = currentUser.getProfileImageUrl();
+        if (imageUrl != null && !imageUrl.isEmpty()) {
+            return imageUrl;
+        }
+        // Generate avatar URL based on user's first name
+        return "https://ui-avatars.com/api/?name=" + currentUser.getFirstName() + "&background=random";
+    }
 }

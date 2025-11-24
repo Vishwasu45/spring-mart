@@ -22,6 +22,8 @@ public class HomeController {
     public String home(Model model) {
         model.addAttribute("latestProducts", productService.getLatestProducts(8));
         model.addAttribute("topRatedProducts", productService.getTopRatedProducts(8));
+        model.addAttribute("featuredProducts", productService.getFeaturedProducts(4));
+        model.addAttribute("flashDeals", productService.getFlashDeals(6));
         model.addAttribute("categories", categoryService.getAllCategories());
         return "home";
     }

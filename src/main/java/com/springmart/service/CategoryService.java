@@ -4,6 +4,7 @@ import com.springmart.dto.CategoryDTO;
 import com.springmart.entity.Category;
 import com.springmart.exception.ResourceNotFoundException;
 import com.springmart.repository.CategoryRepository;
+import com.springmart.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.Cacheable;
@@ -20,8 +21,9 @@ import java.util.stream.Collectors;
 public class CategoryService {
 
     private final CategoryRepository categoryRepository;
+    private final ProductRepository productRepository;
 
-    @Cacheable(value = "categories", key = "'all'")
+    // @Cacheable(value = "categories", key = "'all-v2'")
     public List<CategoryDTO> getAllCategories() {
         return categoryRepository.findAll().stream()
                 .map(this::convertToDTO)
@@ -41,12 +43,14 @@ public class CategoryService {
     }
 
     private CategoryDTO convertToDTO(Category category) {
+        long productCount = productRepository.countByCategoryIdAndIsActiveTrue(category.getId());
         return CategoryDTO.builder()
                 .id(category.getId())
                 .name(category.getName())
                 .description(category.getDescription())
                 .slug(category.getSlug())
                 .imageUrl(category.getImageUrl())
+                .productCount(productCount)
                 .build();
     }
 }

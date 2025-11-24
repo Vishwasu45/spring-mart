@@ -10,6 +10,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 import java.time.LocalDateTime;
 import java.util.HashMap;
@@ -83,6 +84,23 @@ public class GlobalExceptionHandler {
         response.put("path", request.getRequestURI());
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+    }
+
+    @ExceptionHandler(NoResourceFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ResponseEntity<ErrorResponse> handleNoResourceFoundException(
+            NoResourceFoundException ex, HttpServletRequest request) {
+        // Don't log this as an error - it's just a missing static resource (e.g.,
+        // Chrome DevTools requests)
+        log.debug("Static resource not found: {}", request.getRequestURI());
+
+        ErrorResponse error = new ErrorResponse(
+                LocalDateTime.now(),
+                HttpStatus.NOT_FOUND.value(),
+                "Not Found",
+                "The requested resource was not found",
+                request.getRequestURI());
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
     }
 
     @ExceptionHandler(Exception.class)

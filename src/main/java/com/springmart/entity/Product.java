@@ -56,6 +56,14 @@ public class Product {
     @Builder.Default
     private Boolean isActive = true;
 
+    @Column(name = "is_featured", nullable = false)
+    @Builder.Default
+    private Boolean isFeatured = false;
+
+    @Column(name = "discount_percentage", nullable = false)
+    @Builder.Default
+    private Integer discountPercentage = 0;
+
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
     private List<ProductImage> images = new ArrayList<>();

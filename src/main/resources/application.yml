@@ -29,13 +29,11 @@ spring:
       max-file-size: 10MB
       max-request-size: 10MB
 
-# Logging
+# Logging - Detailed configuration in logback-spring.xml
 logging:
-  level:
-    root: INFO
-    com.springmart: DEBUG
-    org.springframework.security: DEBUG
-    org.hibernate.SQL: DEBUG
+  config: classpath:logback-spring.xml
+  file:
+    path: logs
 
 # Application specific
 app:

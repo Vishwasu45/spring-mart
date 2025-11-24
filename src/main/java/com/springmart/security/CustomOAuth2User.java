@@ -47,4 +47,16 @@ public class CustomOAuth2User implements OAuth2User {
         return user.getRoles().stream()
                 .anyMatch(role -> role.getName().equals("ROLE_" + roleName) || role.getName().equals(roleName));
     }
+
+    public String getFirstName() {
+        String fullName = user.getName();
+        if (fullName != null && !fullName.isEmpty()) {
+            return fullName.split(" ")[0];
+        }
+        return user.getEmail().split("@")[0];
+    }
+
+    public String getProfileImageUrl() {
+        return user.getProfileImageUrl();
+    }
 }

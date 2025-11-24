@@ -44,6 +44,8 @@ public class ProductDTO {
     private String sku;
     private String slug;
     private Boolean isActive;
+    private Boolean isFeatured;
+    private Integer discountPercentage;
 
     private List<String> imageUrls;
     private String primaryImageUrl;
