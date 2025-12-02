@@ -8,34 +8,68 @@
 
 <body>
     <div layout:fragment="content">
-        <div class="container my-5">
-            <div class="row">
+        <!-- Header Section -->
+        <div class="bg-light py-5 mb-5">
+            <div class="container">
+                <div class="row align-items-center">
+                    <div class="col-md-6">
+                        <nav aria-label="breadcrumb">
+                            <ol class="breadcrumb mb-2">
+                                <li class="breadcrumb-item"><a href="/" class="text-decoration-none">Home</a></li>
+                                <li class="breadcrumb-item"><a href="/profile" class="text-decoration-none">My
+                                        Profile</a></li>
+                                <li class="breadcrumb-item active" aria-current="page">My Orders</li>
+                            </ol>
+                        </nav>
+                        <h1 class="display-5 fw-bold mb-0">Order History</h1>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="container mb-5">
+            <div class="row g-5">
                 <!-- Sidebar -->
-                <div class="col-lg-3 mb-4">
-                    <div class="card shadow-sm">
-                        <div class="card-body text-center">
-                            <div class="mb-3">
+                <div class="col-lg-3">
+                    <div class="card border-0 shadow-sm rounded-4 overflow-hidden sticky-top"
+                        style="top: 100px; z-index: 100;">
+                        <div class="card-body text-center p-4 bg-primary bg-opacity-10">
+                            <div class="mb-3 position-relative d-inline-block">
                                 <img th:src="${user.imageUrl != null and !#strings.isEmpty(user.imageUrl)} ? ${user.imageUrl} : ${'https://ui-avatars.com/api/?name=' + #strings.replace(user.name, ' ', '+') + '&amp;background=random'}"
-                                    class="rounded-circle img-thumbnail" alt="Profile Picture"
-                                    style="width: 100px; height: 100px; object-fit: cover;">
+                                    class="rounded-circle shadow-sm border border-4 border-white" alt="Profile Picture"
+                                    style="width: 120px; height: 120px; object-fit: cover;">
                             </div>
-                            <h5 class="card-title" th:text="${user.name}">User Name</h5>
-                            <p class="text-muted small" th:text="${user.email}">user@example.com</p>
-                            <span th:each="role : ${user.roles}" class="badge bg-primary me-1"
-                                th:text="${role}">USER</span>
+                            <h5 class="fw-bold mb-1" th:text="${user.name}">User Name</h5>
+                            <p class="text-muted small mb-2" th:text="${user.email}">user@example.com</p>
+                            <div class="d-flex justify-content-center gap-1">
+                                <span th:each="role : ${user.roles}" class="badge bg-primary rounded-pill px-3"
+                                    th:text="${role}">USER</span>
+                            </div>
                         </div>
-                        <div class="list-group list-group-flush" id="profileTabs" role="tablist">
-                            <a href="/profile" class="list-group-item list-group-item-action">
-                                <i class="bi bi-person me-2"></i> Profile Information
+                        <div class="list-group list-group-flush p-2" id="profileTabs" role="tablist">
+                            <a href="/profile"
+                                class="list-group-item list-group-item-action rounded-3 mb-1 border-0 px-3 py-2 d-flex align-items-center">
+                                <i class="bi bi-person me-3 fs-5"></i> Profile Information
                             </a>
-                            <a href="/orders" class="list-group-item list-group-item-action active">
-                                <i class="bi bi-box-seam me-2"></i> My Orders
+                            <a href="/orders"
+                                class="list-group-item list-group-item-action active rounded-3 mb-1 border-0 px-3 py-2 d-flex align-items-center">
+                                <i class="bi bi-box-seam me-3 fs-5"></i> My Orders
                             </a>
-                            <a href="/profile#addresses" class="list-group-item list-group-item-action">
-                                <i class="bi bi-geo-alt me-2"></i> Addresses
+                            <a href="/profile#addresses"
+                                class="list-group-item list-group-item-action rounded-3 mb-1 border-0 px-3 py-2 d-flex align-items-center">
+                                <i class="bi bi-geo-alt me-3 fs-5"></i> Addresses
                             </a>
-                            <a href="/profile#payments" class="list-group-item list-group-item-action">
-                                <i class="bi bi-credit-card me-2"></i> Payment Methods
+                            <a href="/profile#payments"
+                                class="list-group-item list-group-item-action rounded-3 mb-1 border-0 px-3 py-2 d-flex align-items-center">
+                                <i class="bi bi-credit-card me-3 fs-5"></i> Payment Methods
+                            </a>
+                            <a href="/profile#notifications"
+                                class="list-group-item list-group-item-action rounded-3 mb-1 border-0 px-3 py-2 d-flex align-items-center">
+                                <i class="bi bi-bell me-3 fs-5"></i> Email Notifications
+                            </a>
+                            <a href="/logout"
+                                class="list-group-item list-group-item-action rounded-3 mb-1 border-0 px-3 py-2 d-flex align-items-center text-danger">
+                                <i class="bi bi-box-arrow-right me-3 fs-5"></i> Sign Out
                             </a>
                         </div>
                     </div>
@@ -43,82 +77,119 @@
 
                 <!-- Main Content -->
                 <div class="col-lg-9">
-                    <h2 class="mb-4">
-                        <i class="bi bi-bag-check"></i> My Orders
-                    </h2>
-
-                    <div th:if="${orders.empty}" class="text-center py-5">
-                        <i class="bi bi-bag-x" style="font-size: 5rem; color: #ccc;"></i>
-                        <h3 class="mt-3">No orders yet</h3>
-                        <p class="text-muted">Start shopping to place your first order!</p>
-                        <a href="/products" class="btn btn-primary">
-                            <i class="bi bi-shop"></i> Browse Products
+                    <div th:if="${orders.empty}" class="text-center py-5 bg-light rounded-4 border border-dashed">
+                        <i class="bi bi-bag-x text-muted opacity-25" style="font-size: 5rem;"></i>
+                        <h3 class="mt-3 fw-bold text-muted">No orders yet</h3>
+                        <p class="text-muted mb-4">Start shopping to place your first order!</p>
+                        <a href="/products" class="btn btn-primary rounded-pill px-5 py-2">
+                            <i class="bi bi-shop me-2"></i> Browse Products
                         </a>
                     </div>
 
                     <div th:unless="${orders.empty}">
-                        <div class="card mb-3" th:each="order : ${orders.content}">
-                            <div class="card-body">
+                        <div class="card border-0 shadow-sm rounded-4 mb-4 hover-lift transition-all"
+                            th:each="order : ${orders.content}">
+                            <div class="card-body p-4">
                                 <div class="row align-items-center">
                                     <div class="col-md-8">
-                                        <h5 class="card-title mb-1">
-                                            Order <span th:text="${order.orderNumber}">ORDER-001</span>
-                                        </h5>
-                                        <p class="text-muted mb-2">
-                                            <i class="bi bi-calendar"></i>
-                                            <span
-                                                th:text="${#temporals.format(order.createdAt, 'MMM dd, yyyy HH:mm')}">Jan
-                                                01,
-                                                2024</span>
-                                        </p>
-                                        <p class="mb-0">
-                                            <span class="badge" th:classappend="${order.status.name() == 'PENDING' ? 'bg-warning' :
-                                                                      order.status.name() == 'PROCESSING' ? 'bg-info' :
-                                                                      order.status.name() == 'SHIPPED' ? 'bg-primary' :
-                                                                      order.status.name() == 'DELIVERED' ? 'bg-success' :
-                                                                      'bg-danger'}" th:text="${order.status.name()}">
+                                        <div class="d-flex align-items-center mb-2">
+                                            <h5 class="card-title fw-bold mb-0 me-3">
+                                                Order <span th:text="${order.orderNumber}">ORDER-001</span>
+                                            </h5>
+                                            <span class="badge rounded-pill px-3"
+                                                th:classappend="${order.status.name() == 'PENDING' ? 'bg-warning-subtle text-warning border border-warning-subtle' :
+                                                                  order.status.name() == 'PROCESSING' ? 'bg-info-subtle text-info border border-info-subtle' :
+                                                                  order.status.name() == 'SHIPPED' ? 'bg-primary-subtle text-primary border border-primary-subtle' :
+                                                                  order.status.name() == 'DELIVERED' ? 'bg-success-subtle text-success border border-success-subtle' :
+                                                                  'bg-danger-subtle text-danger border border-danger-subtle'}"
+                                                th:text="${order.status.name()}">
                                                 Status
                                             </span>
-                                            <span class="ms-3">
-                                                <i class="bi bi-box"></i>
-                                                <span th:text="${order.items.size()}">0</span> item(s)
-                                            </span>
+                                        </div>
+                                        <p class="text-muted small mb-2">
+                                            <i class="bi bi-calendar me-2"></i>
+                                            <span
+                                                th:text="${#temporals.format(order.createdAt, 'MMM dd, yyyy • HH:mm')}">Jan
+                                                01, 2024</span>
+                                        </p>
+                                        <p class="mb-0 text-muted">
+                                            <i class="bi bi-box me-2"></i>
+                                            <span th:text="${order.items.size()}">0</span> item(s)
                                         </p>
                                     </div>
                                     <div class="col-md-4 text-end">
-                                        <h4 class="mb-2">
+                                        <h3 class="fw-bold text-primary mb-3">
                                             $<span
                                                 th:text="${#numbers.formatDecimal(order.totalAmount, 1, 2)}">0.00</span>
-                                        </h4>
-                                        <a th:href="@{/orders/{id}(id=${order.id})}"
-                                            class="btn btn-outline-primary btn-sm">
-                                            <i class="bi bi-eye"></i> View Details
-                                        </a>
+                                        </h3>
+                                        <div class="d-flex gap-2 justify-content-end">
+                                            <button th:onclick="'reorder(' + ${order.id} + ')'"
+                                                class="btn btn-outline-secondary rounded-pill px-3"
+                                                th:title="'Reorder items from order #' + ${order.orderNumber}">
+                                                <i class="bi bi-arrow-repeat me-1"></i> Reorder
+                                            </button>
+                                            <a th:href="@{/orders/{id}(id=${order.id})}"
+                                                class="btn btn-outline-primary rounded-pill px-3">
+                                                View Details <i class="bi bi-arrow-right ms-2"></i>
+                                            </a>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
 
                         <!-- Pagination -->
-                        <nav th:if="${orders.totalPages > 1}" aria-label="Orders pagination">
+                        <nav th:if="${orders.totalPages > 1}" aria-label="Orders pagination" class="mt-5">
                             <ul class="pagination justify-content-center">
                                 <li class="page-item" th:classappend="${orders.first} ? 'disabled'">
-                                    <a class="page-link" th:href="@{/orders(page=${orders.number - 1})}">Previous</a>
+                                    <a class="page-link rounded-start-pill px-3"
+                                        th:href="@{/orders(page=${orders.number - 1})}">
+                                        <i class="bi bi-chevron-left"></i> Previous
+                                    </a>
                                 </li>
                                 <li class="page-item" th:each="i : ${#numbers.sequence(0, orders.totalPages - 1)}"
                                     th:classappend="${i == orders.number} ? 'active'">
-                                    <a class="page-link" th:href="@{/orders(page=${i})}" th:text="${i + 1}">1</a>
+                                    <a class="page-link px-3" th:href="@{/orders(page=${i})}" th:text="${i + 1}">1</a>
                                 </li>
                                 <li class="page-item" th:classappend="${orders.last} ? 'disabled'">
-                                    <a class="page-link" th:href="@{/orders(page=${orders.number + 1})}">Next</a>
+                                    <a class="page-link rounded-end-pill px-3"
+                                        th:href="@{/orders(page=${orders.number + 1})}">
+                                        Next <i class="bi bi-chevron-right"></i>
+                                    </a>
                                 </li>
                             </ul>
                         </nav>
-                    </div>
+                                        </div>
                 </div>
             </div>
         </div>
     </div>
+
+    <th:block layout:fragment="scripts">
+        <script>
+            async function reorder(orderId) {
+                if (!confirm('Do you want to add all items from this order to your cart?')) {
+                    return;
+                }
+
+                try {
+                    const response = await fetch(`/api/orders/${orderId}/reorder`, {
+                        method: 'POST'
+                    });
+
+                    if (response.ok) {
+                        alert('Items added to cart successfully! Some items may be unavailable.');
+                        window.location.href = '/cart';
+                    } else {
+                        const error = await response.text();
+                        alert('Failed to reorder: ' + error);
+                    }
+                } catch (error) {
+                    alert('Failed to reorder items. Please try again.');
+                }
+            }
+        </script>
+    </th:block>
 </body>
 
 </html>

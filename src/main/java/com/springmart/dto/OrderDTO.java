@@ -40,8 +40,10 @@ public class OrderDTO {
     private String billingAddress;
     private String notes;
 
+    private String trackingNumber;
+    private String carrier;
+    private LocalDateTime estimatedDeliveryDate;
+
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 }
-
-

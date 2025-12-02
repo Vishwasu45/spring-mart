@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+    xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+    layout:decorate="~{layout}">
+
+<head>
+    <title>Track Your Order - SpringMart</title>
+</head>
+
+<body>
+    <div layout:fragment="content">
+        <div class="container py-5">
+            <div class="row justify-content-center">
+                <div class="col-lg-6">
+                    <div class="card border-0 shadow-sm rounded-4">
+                        <div class="card-body p-4 p-md-5">
+                            <div class="text-center mb-4">
+                                <i class="bi bi-search text-primary" style="font-size: 3rem;"></i>
+                                <h2 class="fw-bold mt-3">Track Your Order</h2>
+                                <p class="text-muted">Enter your order details to track your purchase</p>
+                            </div>
+
+                            <div th:if="${error}" class="alert alert-danger" role="alert">
+                                <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                                <span th:text="${error}"></span>
+                            </div>
+
+                            <form id="trackOrderForm" onsubmit="trackOrder(event)">
+                                <div class="mb-3">
+                                    <label for="orderNumber" class="form-label fw-semibold">Order Number</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="bi bi-hash"></i></span>
+                                        <input type="text" 
+                                               class="form-control" 
+                                               id="orderNumber" 
+                                               name="orderNumber"
+                                               placeholder="Enter your order number"
+                                               required>
+                                    </div>
+                                    <small class="text-muted">You can find this in your order confirmation email</small>
+                                </div>
+
+                                <div class="mb-4">
+                                    <label for="email" class="form-label fw-semibold">Email Address</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="bi bi-envelope"></i></span>
+                                        <input type="email" 
+                                               class="form-control" 
+                                               id="email" 
+                                               name="email"
+                                               placeholder="Enter your email address"
+                                               required>
+                                    </div>
+                                    <small class="text-muted">The email you used when placing the order</small>
+                                </div>
+
+                                <button type="submit" class="btn btn-primary w-100 py-3 rounded-pill fw-semibold">
+                                    <i class="bi bi-search me-2"></i>
+                                    Track Order
+                                </button>
+                            </form>
+
+                            <div class="mt-4 text-center">
+                                <a href="/" class="text-decoration-none">
+                                    <i class="bi bi-arrow-left me-1"></i>
+                                    Back to Home
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card border-0 shadow-sm rounded-4 mt-4 bg-light">
+                        <div class="card-body p-4">
+                            <h6 class="fw-bold mb-3">
+                                <i class="bi bi-info-circle me-2"></i>
+                                Need Help?
+                            </h6>
+                            <ul class="list-unstyled mb-0 small">
+                                <li class="mb-2">
+                                    <i class="bi bi-check-circle text-success me-2"></i>
+                                    Your order number is in your confirmation email
+                                </li>
+                                <li class="mb-2">
+                                    <i class="bi bi-check-circle text-success me-2"></i>
+                                    Use the same email address you used at checkout
+                                </li>
+                                <li>
+                                    <i class="bi bi-check-circle text-success me-2"></i>
+                                    Orders may take a few minutes to appear in the system
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <th:block layout:fragment="scripts">
+        <script>
+            function trackOrder(event) {
+                event.preventDefault();
+                
+                const orderNumber = document.getElementById('orderNumber').value;
+                const email = document.getElementById('email').value;
+                
+                const btn = event.target.querySelector('button[type="submit"]');
+                const originalText = btn.innerHTML;
+                btn.disabled = true;
+                btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Searching...';
+                
+                fetch(`/api/orders/guest/lookup?orderNumber=${encodeURIComponent(orderNumber)}&email=${encodeURIComponent(email)}`)
+                    .then(response => {
+                        if (response.ok) {
+                            return response.json();
+                        } else {
+                            throw new Error('Order not found');
+                        }
+                    })
+                    .then(order => {
+                        window.location.href = '/orders/' + order.id;
+                    })
+                    .catch(error => {
+                        alert('Order not found. Please check your order number and email address.');
+                        btn.disabled = false;
+                        btn.innerHTML = originalText;
+                    });
+            }
+        </script>
+    </th:block>
+</body>
+
+</html>

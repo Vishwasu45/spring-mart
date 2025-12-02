@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+    xmlns:sec="http://www.thymeleaf.org/extras/spring-security" layout:decorate="~{layout}">
+
+<head>
+    <title>My Wishlist - SpringMart</title>
+</head>
+
+<body>
+    <div layout:fragment="content">
+        <!-- Page Header -->
+        <div class="bg-light py-4 mb-5">
+            <div class="container">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h1 class="h2 fw-bold mb-1">My Wishlist</h1>
+                        <p class="text-muted mb-0">Save your favorite products for later</p>
+                    </div>
+                    <span class="badge bg-primary rounded-pill fs-6 px-4 py-2">
+                        <span id="wishlistCount">0</span> Items
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <div class="container mb-5">
+            <!-- Empty State -->
+            <div id="emptyWishlist" class="text-center py-5" style="display: none;">
+                <i class="bi bi-heart display-1 text-muted mb-4"></i>
+                <h3 class="mb-3">Your Wishlist is Empty</h3>
+                <p class="text-muted mb-4">Start adding products you love!</p>
+                <a href="/products" class="btn btn-primary rounded-pill px-5">
+                    <i class="bi bi-shop me-2"></i> Browse Products
+                </a>
+            </div>
+
+            <!-- Wishlist Items -->
+            <div id="wishlistItems" class="row g-4">
+                <!-- Items will be loaded here via JavaScript -->
+            </div>
+        </div>
+    </div>
+
+    <script layout:fragment="script">
+        document.addEventListener('DOMContentLoaded', function() {
+            loadWishlist();
+        });
+
+        async function loadWishlist() {
+            try {
+                const response = await fetch('/api/wishlist');
+                if (!response.ok) {
+                    throw new Error('Failed to load wishlist');
+                }
+
+                const products = await response.json();
+                displayWishlist(products);
+            } catch (error) {
+                console.error('Error loading wishlist:', error);
+                showEmptyState();
+            }
+        }
+
+        function displayWishlist(products) {
+            const container = document.getElementById('wishlistItems');
+            const emptyState = document.getElementById('emptyWishlist');
+            const countBadge = document.getElementById('wishlistCount');
+
+            if (products.length === 0) {
+                showEmptyState();
+                return;
+            }
+
+            emptyState.style.display = 'none';
+            container.style.display = 'flex';
+            countBadge.textContent = products.length;
+
+            container.innerHTML = products.map(product => createProductCard(product)).join('');
+        }
+
+        function showEmptyState() {
+            document.getElementById('emptyWishlist').style.display = 'block';
+            document.getElementById('wishlistItems').style.display = 'none';
+            document.getElementById('wishlistCount').textContent = '0';
+        }
+
+        function createProductCard(product) {
+            const discountedPrice = product.discountPercentage > 0 
+                ? (product.price * (100 - product.discountPercentage) / 100).toFixed(2)
+                : product.price.toFixed(2);
+
+            return `
+                <div class="col-md-6 col-lg-3">
+                    <div class="card product-card border-0 shadow-sm h-100">
+                        <div class="product-image-wrapper position-relative">
+                            <img src="${product.primaryImageUrl || 'https://via.placeholder.com/300x200?text=' + product.name}"
+                                class="product-image" alt="${escapeHtml(product.name)}">
+                            ${product.discountPercentage > 0 ? `
+                                <span class="position-absolute top-0 start-0 badge bg-danger m-3 px-3 py-2 rounded-pill shadow-sm">
+                                    -${product.discountPercentage}%
+                                </span>
+                            ` : ''}
+                            <button class="btn btn-danger rounded-circle position-absolute top-0 end-0 m-3 shadow-sm wishlist-btn"
+                                style="width: 35px; height: 35px; padding: 0;"
+                                onclick="removeFromWishlist(${product.id})">
+                                <i class="bi bi-heart-fill text-white"></i>
+                            </button>
+                            ${product.stockQuantity === 0 ? `
+                                <div class="position-absolute bottom-0 start-0 end-0 bg-dark bg-opacity-75 text-white text-center py-2">
+                                    <small class="fw-bold">Out of Stock</small>
+                                </div>
+                            ` : ''}
+                        </div>
+                        <div class="card-body p-4 d-flex flex-column">
+                            <div class="mb-2">
+                                <span class="badge bg-light text-primary border border-primary-subtle rounded-pill">
+                                    ${escapeHtml(product.categoryName)}
+                                </span>
+                            </div>
+                            <h5 class="card-title fw-bold mb-2 text-truncate">${escapeHtml(product.name)}</h5>
+                            <div class="mb-3">
+                                <i class="bi bi-star-fill text-warning small"></i>
+                                <span class="fw-bold small">${product.averageRating.toFixed(1)}</span>
+                                <span class="text-muted small">(${product.reviewCount})</span>
+                            </div>
+                            <div class="mt-auto">
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <div>
+                                        ${product.discountPercentage > 0 ? `
+                                            <span class="h5 fw-bold text-danger mb-0">$${discountedPrice}</span>
+                                            <small class="text-muted text-decoration-line-through ms-1">$${product.price.toFixed(2)}</small>
+                                        ` : `
+                                            <span class="h5 fw-bold text-primary mb-0">$${product.price.toFixed(2)}</span>
+                                        `}
+                                    </div>
+                                </div>
+                                <div class="d-grid gap-2">
+                                    <a href="/products/${product.id}" class="btn btn-primary rounded-pill">
+                                        <i class="bi bi-eye me-2"></i> View Details
+                                    </a>
+                                    ${product.stockQuantity > 0 ? `
+                                        <button class="btn btn-outline-primary rounded-pill" onclick="addToCart(${product.id})">
+                                            <i class="bi bi-cart-plus me-2"></i> Add to Cart
+                                        </button>
+                                    ` : ''}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        async function removeFromWishlist(productId) {
+            try {
+                const response = await fetch(`/api/wishlist/remove/${productId}`, {
+                    method: 'DELETE'
+                });
+
+                if (response.ok) {
+                    // Reload wishlist
+                    loadWishlist();
+                } else {
+                    alert('Failed to remove from wishlist');
+                }
+            } catch (error) {
+                console.error('Error removing from wishlist:', error);
+                alert('Failed to remove from wishlist');
+            }
+        }
+
+        async function addToCart(productId) {
+            try {
+                const formData = new URLSearchParams();
+                formData.append('productId', productId);
+                formData.append('quantity', '1');
+
+                const response = await fetch('/cart/add', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded'
+                    },
+                    body: formData
+                });
+
+                if (response.ok) {
+                    alert('Added to cart successfully!');
+                } else {
+                    alert('Failed to add to cart');
+                }
+            } catch (error) {
+                console.error('Error adding to cart:', error);
+                alert('Failed to add to cart');
+            }
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+    </script>
+</body>
+
+</html>

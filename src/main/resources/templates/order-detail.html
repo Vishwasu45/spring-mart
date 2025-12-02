@@ -8,99 +8,185 @@
 
 <body>
     <div layout:fragment="content">
-        <div class="container my-5">
-            <div class="d-flex justify-content-between align-items-center mb-4">
-                <h1>
-                    <i class="bi bi-receipt"></i> Order Details
-                </h1>
-                <a href="/orders" class="btn btn-outline-secondary">
-                    <i class="bi bi-arrow-left"></i> Back to Orders
-                </a>
+        <!-- Header Section -->
+        <div class="bg-light py-5 mb-5">
+            <div class="container">
+                <div class="row align-items-center">
+                    <div class="col-md-6">
+                        <nav aria-label="breadcrumb">
+                            <ol class="breadcrumb mb-2">
+                                <li class="breadcrumb-item"><a href="/" class="text-decoration-none">Home</a></li>
+                                <li class="breadcrumb-item"><a href="/profile" class="text-decoration-none">My
+                                        Profile</a></li>
+                                <li class="breadcrumb-item"><a href="/orders" class="text-decoration-none">My Orders</a>
+                                </li>
+                                <li class="breadcrumb-item active" aria-current="page"
+                                    th:text="'Order #' + ${order.orderNumber}">Order Details</li>
+                            </ol>
+                        </nav>
+                        <h1 class="display-5 fw-bold mb-0">Order Details</h1>
+                    </div>
+                    <div class="col-md-6 text-md-end mt-3 mt-md-0">
+                        <a href="/orders" class="btn btn-outline-secondary rounded-pill px-4">
+                            <i class="bi bi-arrow-left me-2"></i> Back to Orders
+                        </a>
+                    </div>
+                </div>
             </div>
+        </div>
 
-            <div class="row">
+        <div class="container mb-5">
+            <div class="row g-4">
                 <div class="col-lg-8">
                     <!-- Order Info -->
-                    <div class="card mb-4">
-                        <div class="card-body">
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <h5>Order Number</h5>
-                                    <p th:text="${order.orderNumber}">ORDER-001</p>
+                    <div class="card border-0 shadow-sm rounded-4 mb-4">
+                        <div class="card-body p-4">
+                            <div class="row g-3">
+                                <div class="col-md-4">
+                                    <h6 class="text-muted small text-uppercase fw-bold mb-1">Order Number</h6>
+                                    <p class="h5 fw-bold mb-0" th:text="${order.orderNumber}">ORDER-001</p>
                                 </div>
-                                <div class="col-md-6">
-                                    <h5>Order Date</h5>
-                                    <p th:text="${#temporals.format(order.createdAt, 'MMM dd, yyyy HH:mm')}">Jan 01, 2024</p>
+                                <div class="col-md-4">
+                                    <h6 class="text-muted small text-uppercase fw-bold mb-1">Order Date</h6>
+                                    <p class="h5 mb-0"
+                                        th:text="${#temporals.format(order.createdAt, 'MMM dd, yyyy • HH:mm')}">Jan 01,
+                                        2024</p>
                                 </div>
-                                <div class="col-md-6">
-                                    <h5>Status</h5>
-                                    <p>
-                                        <span class="badge"
-                                              th:classappend="${order.status.name() == 'PENDING' ? 'bg-warning' :
-                                                              order.status.name() == 'PROCESSING' ? 'bg-info' :
-                                                              order.status.name() == 'SHIPPED' ? 'bg-primary' :
-                                                              order.status.name() == 'DELIVERED' ? 'bg-success' :
-                                                              'bg-danger'}"
-                                              th:text="${order.status.name()}">
-                                            Status
-                                        </span>
+                                <div class="col-md-4">
+                                    <h6 class="text-muted small text-uppercase fw-bold mb-1">Status</h6>
+                                    <span class="badge rounded-pill px-3" th:classappend="${order.status.name() == 'PENDING' ? 'bg-warning-subtle text-warning border border-warning-subtle' :
+                                                          order.status.name() == 'PROCESSING' ? 'bg-info-subtle text-info border border-info-subtle' :
+                                                          order.status.name() == 'SHIPPED' ? 'bg-primary-subtle text-primary border border-primary-subtle' :
+                                                          order.status.name() == 'DELIVERED' ? 'bg-success-subtle text-success border border-success-subtle' :
+                                                          'bg-danger-subtle text-danger border border-danger-subtle'}"
+                                        th:text="${order.status.name()}">
+                                        Status
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Order Tracking -->
+                    <div class="card border-0 shadow-sm rounded-4 mb-4" th:if="${order.trackingNumber != null}">
+                        <div class="card-header bg-transparent border-0 p-4 pb-0">
+                            <h5 class="card-title fw-bold mb-0">
+                                <i class="bi bi-truck text-primary me-2"></i> Tracking Information
+                            </h5>
+                        </div>
+                        <div class="card-body p-4">
+                            <div class="row g-3 mb-4">
+                                <div class="col-md-4">
+                                    <h6 class="text-muted small text-uppercase fw-bold mb-1">Tracking Number</h6>
+                                    <p class="h6 mb-0 font-monospace" th:text="${order.trackingNumber}">TRACK123456</p>
+                                </div>
+                                <div class="col-md-4">
+                                    <h6 class="text-muted small text-uppercase fw-bold mb-1">Carrier</h6>
+                                    <p class="h6 mb-0" th:text="${order.carrier}">FedEx</p>
+                                </div>
+                                <div class="col-md-4" th:if="${order.estimatedDeliveryDate != null}">
+                                    <h6 class="text-muted small text-uppercase fw-bold mb-1">Estimated Delivery</h6>
+                                    <p class="h6 mb-0" 
+                                       th:text="${#temporals.format(order.estimatedDeliveryDate, 'MMM dd, yyyy')}">
+                                        Jan 15, 2024
                                     </p>
+                                </div>
+                            </div>
+                            
+                            <!-- Order Status Timeline -->
+                            <div class="mt-4">
+                                <h6 class="fw-bold mb-3">Order Timeline</h6>
+                                <div class="position-relative" id="orderTimeline">
+                                    <div class="text-center py-4">
+                                        <div class="spinner-border text-primary" role="status">
+                                            <span class="visually-hidden">Loading...</span>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
 
                     <!-- Shipping Information -->
-                    <div class="card mb-4">
-                        <div class="card-body">
-                            <h5 class="card-title">Shipping Information</h5>
-                            <div class="row">
+                    <div class="card border-0 shadow-sm rounded-4 mb-4">
+                        <div class="card-header bg-transparent border-0 p-4 pb-0">
+                            <h5 class="card-title fw-bold mb-0">Shipping & Billing</h5>
+                        </div>
+                        <div class="card-body p-4">
+                            <div class="row g-4">
                                 <div class="col-md-6">
-                                    <h6>Shipping Address</h6>
-                                    <p th:text="${order.shippingAddress}">Shipping Address</p>
+                                    <div class="p-3 bg-light rounded-4 h-100">
+                                        <div class="d-flex align-items-center mb-3">
+                                            <div class="bg-primary bg-opacity-10 p-2 rounded-circle text-primary me-3">
+                                                <i class="bi bi-geo-alt fs-5"></i>
+                                            </div>
+                                            <h6 class="fw-bold mb-0">Shipping Address</h6>
+                                        </div>
+                                        <p class="text-muted mb-0 ps-5" th:text="${order.shippingAddress}">Shipping
+                                            Address</p>
+                                    </div>
                                 </div>
                                 <div class="col-md-6">
-                                    <h6>Billing Address</h6>
-                                    <p th:text="${order.billingAddress}">Billing Address</p>
+                                    <div class="p-3 bg-light rounded-4 h-100">
+                                        <div class="d-flex align-items-center mb-3">
+                                            <div class="bg-success bg-opacity-10 p-2 rounded-circle text-success me-3">
+                                                <i class="bi bi-receipt fs-5"></i>
+                                            </div>
+                                            <h6 class="fw-bold mb-0">Billing Address</h6>
+                                        </div>
+                                        <p class="text-muted mb-0 ps-5" th:text="${order.billingAddress}">Billing
+                                            Address</p>
+                                    </div>
                                 </div>
                             </div>
-                            <div th:if="${order.notes != null && !order.notes.isEmpty()}">
-                                <h6>Order Notes</h6>
-                                <p th:text="${order.notes}">Notes</p>
+                            <div th:if="${order.notes != null && !order.notes.isEmpty()}" class="mt-4">
+                                <h6 class="fw-bold mb-2">Order Notes</h6>
+                                <div
+                                    class="p-3 bg-warning bg-opacity-10 text-warning rounded-3 border border-warning-subtle">
+                                    <i class="bi bi-info-circle me-2"></i>
+                                    <span th:text="${order.notes}">Notes</span>
+                                </div>
                             </div>
                         </div>
                     </div>
 
                     <!-- Order Items -->
-                    <div class="card">
-                        <div class="card-body">
-                            <h5 class="card-title">Order Items</h5>
+                    <div class="card border-0 shadow-sm rounded-4">
+                        <div class="card-header bg-transparent border-0 p-4 pb-0">
+                            <h5 class="card-title fw-bold mb-0">Order Items</h5>
+                        </div>
+                        <div class="card-body p-4">
                             <div class="table-responsive">
-                                <table class="table">
-                                    <thead>
+                                <table class="table table-hover align-middle">
+                                    <thead class="bg-light">
                                         <tr>
-                                            <th>Product</th>
-                                            <th class="text-center">Quantity</th>
-                                            <th class="text-end">Price</th>
-                                            <th class="text-end">Subtotal</th>
+                                            <th class="border-0 rounded-start-3 py-3 ps-3">Product</th>
+                                            <th class="border-0 text-center py-3">Quantity</th>
+                                            <th class="border-0 text-end py-3">Price</th>
+                                            <th class="border-0 rounded-end-3 text-end py-3 pe-3">Subtotal</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         <tr th:each="item : ${order.items}">
-                                            <td>
+                                            <td class="ps-3">
                                                 <div class="d-flex align-items-center">
-                                                    <img th:src="${item.productImageUrl != null ? item.productImageUrl : 'https://via.placeholder.com/50'}"
-                                                        class="img-thumbnail me-2" style="width: 50px; height: 50px;"
-                                                        th:alt="${item.productName}">
-                                                    <span th:text="${item.productName}">Product Name</span>
+                                                    <div class="position-relative me-3">
+                                                        <img th:src="${item.productImageUrl != null ? item.productImageUrl : 'https://via.placeholder.com/60'}"
+                                                            class="rounded-3 object-fit-cover shadow-sm"
+                                                            style="width: 60px; height: 60px;"
+                                                            th:alt="${item.productName}">
+                                                    </div>
+                                                    <span class="fw-bold text-dark"
+                                                        th:text="${item.productName}">Product Name</span>
                                                 </div>
                                             </td>
                                             <td class="text-center" th:text="${item.quantity}">1</td>
-                                            <td class="text-end">
+                                            <td class="text-end text-muted">
                                                 $<span th:text="${#numbers.formatDecimal(item.price, 1, 2)}">0.00</span>
                                             </td>
-                                            <td class="text-end">
-                                                $<span th:text="${#numbers.formatDecimal(item.subtotal, 1, 2)}">0.00</span>
+                                            <td class="text-end fw-bold pe-3">
+                                                $<span
+                                                    th:text="${#numbers.formatDecimal(item.subtotal, 1, 2)}">0.00</span>
                                             </td>
                                         </tr>
                                     </tbody>
@@ -112,36 +198,63 @@
 
                 <div class="col-lg-4">
                     <!-- Order Summary -->
-                    <div class="card mb-4">
-                        <div class="card-body">
-                            <h5 class="card-title">Order Summary</h5>
-                            <hr>
-                            <div class="d-flex justify-content-between mb-2">
-                                <span>Subtotal:</span>
-                                <span>$<span th:text="${#numbers.formatDecimal(order.subtotal, 1, 2)}">0.00</span></span>
+                    <div class="card border-0 shadow-sm rounded-4 mb-4 bg-light">
+                        <div class="card-body p-4">
+                            <h5 class="card-title fw-bold mb-4">Order Summary</h5>
+                            <div class="d-flex justify-content-between mb-2 text-muted">
+                                <span>Subtotal</span>
+                                <span>$<span
+                                        th:text="${#numbers.formatDecimal(order.subtotal, 1, 2)}">0.00</span></span>
                             </div>
-                            <div class="d-flex justify-content-between mb-2">
-                                <span>Tax:</span>
+                            <div class="d-flex justify-content-between mb-2 text-success"
+                                th:if="${order.promoCode != null and order.discountAmount != null and order.discountAmount > 0}">
+                                <span>
+                                    <i class="bi bi-tag-fill me-1"></i>
+                                    Discount (<span th:text="${order.promoCode.code}">PROMO</span>)
+                                </span>
+                                <span>-$<span
+                                        th:text="${#numbers.formatDecimal(order.discountAmount, 1, 2)}">0.00</span></span>
+                            </div>
+                            <div class="d-flex justify-content-between mb-2 text-muted">
+                                <span>Tax</span>
                                 <span>$<span th:text="${#numbers.formatDecimal(order.tax, 1, 2)}">0.00</span></span>
                             </div>
-                            <div class="d-flex justify-content-between mb-2">
-                                <span>Shipping:</span>
-                                <span>$<span th:text="${#numbers.formatDecimal(order.shippingCost, 1, 2)}">0.00</span></span>
+                            <div class="d-flex justify-content-between mb-4 text-muted">
+                                <span>Shipping</span>
+                                <span>$<span
+                                        th:text="${#numbers.formatDecimal(order.shippingCost, 1, 2)}">0.00</span></span>
                             </div>
-                            <hr>
-                            <div class="d-flex justify-content-between mb-3">
-                                <h5>Total:</h5>
-                                <h5>$<span th:text="${#numbers.formatDecimal(order.totalAmount, 1, 2)}">0.00</span></h5>
+                            <hr class="border-secondary border-opacity-10">
+                            <div class="d-flex justify-content-between align-items-center mb-0">
+                                <h5 class="fw-bold mb-0">Total</h5>
+                                <h4 class="fw-bold text-primary mb-0">$<span
+                                        th:text="${#numbers.formatDecimal(order.totalAmount, 1, 2)}">0.00</span></h4>
                             </div>
                         </div>
                     </div>
 
                     <!-- Order Actions -->
-                    <div class="card" th:if="${order.status.name() == 'PENDING'}">
-                        <div class="card-body">
-                            <h5 class="card-title">Order Actions</h5>
-                            <button class="btn btn-danger w-100" onclick="cancelOrder()">
-                                <i class="bi bi-x-circle"></i> Cancel Order
+                    <div class="card border-0 shadow-sm rounded-4" th:if="${order.status.name() == 'PENDING'}">
+                        <div class="card-body p-4">
+                            <h5 class="card-title fw-bold mb-3">Order Actions</h5>
+                            <p class="text-muted small mb-3">Need to change something? You can cancel this order before
+                                it's processed.</p>
+                            <button class="btn btn-danger w-100 rounded-pill py-2" onclick="cancelOrder()">
+                                <i class="bi bi-x-circle me-2"></i> Cancel Order
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Reorder Action -->
+                    <div class="card border-0 shadow-sm rounded-4" 
+                         th:if="${order.status.name() == 'DELIVERED' || order.status.name() == 'COMPLETED'}">
+                        <div class="card-body p-4">
+                            <h5 class="card-title fw-bold mb-3">
+                                <i class="bi bi-arrow-repeat me-2"></i>Order Again
+                            </h5>
+                            <p class="text-muted small mb-3">Want to reorder the same items? Click below to add them to your cart.</p>
+                            <button class="btn btn-primary w-100 rounded-pill py-2" onclick="reorderItems()">
+                                <i class="bi bi-cart-plus me-2"></i> Add to Cart
                             </button>
                         </div>
                     </div>
@@ -152,32 +265,190 @@
 
     <th:block layout:fragment="scripts">
         <script th:inline="javascript">
+            const orderId = /*[[${order.id}]]*/ 0;
+            const hasTracking = /*[[${order.trackingNumber != null}]]*/ false;
+
+            // Load order timeline if tracking exists
+            if (hasTracking) {
+                document.addEventListener('DOMContentLoaded', function() {
+                    loadOrderTimeline();
+                });
+            }
+
+            async function loadOrderTimeline() {
+                try {
+                    const response = await fetch(`/api/orders/${orderId}/status-history`);
+                    if (!response.ok) {
+                        throw new Error('Failed to load timeline');
+                    }
+
+                    const history = await response.json();
+                    displayTimeline(history);
+                } catch (error) {
+                    console.error('Error loading timeline:', error);
+                    document.getElementById('orderTimeline').innerHTML = `
+                        <div class="text-center text-muted py-3">
+                            <i class="bi bi-exclamation-circle me-2"></i>
+                            Unable to load timeline
+                        </div>
+                    `;
+                }
+            }
+
+            function displayTimeline(history) {
+                const timeline = document.getElementById('orderTimeline');
+                
+                if (!history || history.length === 0) {
+                    timeline.innerHTML = '<p class="text-muted mb-0">No tracking history available yet.</p>';
+                    return;
+                }
+
+                const statusIcons = {
+                    'PENDING': 'clock-history',
+                    'PROCESSING': 'box-seam',
+                    'SHIPPED': 'truck',
+                    'DELIVERED': 'check-circle',
+                    'CANCELLED': 'x-circle'
+                };
+
+                const statusColors = {
+                    'PENDING': 'warning',
+                    'PROCESSING': 'info',
+                    'SHIPPED': 'primary',
+                    'DELIVERED': 'success',
+                    'CANCELLED': 'danger'
+                };
+
+                let html = '<div class="timeline">';
+                
+                history.forEach((item, index) => {
+                    const icon = statusIcons[item.status] || 'circle';
+                    const color = statusColors[item.status] || 'secondary';
+                    const isLast = index === history.length - 1;
+                    
+                    html += `
+                        <div class="timeline-item">
+                            <div class="timeline-marker bg-${color}">
+                                <i class="bi bi-${icon} text-white"></i>
+                            </div>
+                            ${!isLast ? '<div class="timeline-line"></div>' : ''}
+                            <div class="timeline-content">
+                                <div class="d-flex justify-content-between align-items-start mb-2">
+                                    <h6 class="fw-bold mb-0">${formatStatus(item.status)}</h6>
+                                    <small class="text-muted">${formatDate(item.createdAt)}</small>
+                                </div>
+                                ${item.notes ? `<p class="text-muted small mb-0">${escapeHtml(item.notes)}</p>` : ''}
+                            </div>
+                        </div>
+                    `;
+                });
+                
+                html += '</div>';
+                timeline.innerHTML = html;
+            }
+
+            function formatStatus(status) {
+                return status.charAt(0) + status.slice(1).toLowerCase();
+            }
+
+            function formatDate(dateString) {
+                const date = new Date(dateString);
+                const options = { 
+                    year: 'numeric', 
+                    month: 'short', 
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                };
+                return date.toLocaleDateString('en-US', options);
+            }
+
+            function escapeHtml(text) {
+                const div = document.createElement('div');
+                div.textContent = text;
+                return div.innerHTML;
+            }
+
             function cancelOrder() {
-                if (!confirm('Are you sure you want to cancel this order?')) {
+                if (!confirm('Are you sure you want to cancel this order? This action cannot be undone.')) {
                     return;
                 }
 
                 const orderId = /*[[${order.id}]]*/ 0;
 
+                // Show loading state
+                const btn = document.querySelector('button[onclick="cancelOrder()"]');
+                const originalText = btn.innerHTML;
+                btn.disabled = true;
+                btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>Cancelling...';
+
                 fetch(`/api/orders/${orderId}`, {
                     method: 'DELETE'
                 })
-                .then(response => {
-                    if (response.ok) {
-                        alert('Order cancelled successfully');
-                        location.reload();
-                    } else {
-                        alert('Failed to cancel order');
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    alert('Failed to cancel order');
-                });
+                    .then(response => {
+                        if (response.ok) {
+                            // Create a toast or alert for better UX
+                            const alertDiv = document.createElement('div');
+                            alertDiv.className = 'alert alert-success position-fixed top-0 start-50 translate-middle-x mt-4 shadow-lg rounded-4 border-0 z-3';
+                            alertDiv.style.minWidth = '300px';
+                            alertDiv.innerHTML = '<i class="bi bi-check-circle-fill me-2"></i> Order cancelled successfully';
+                            document.body.appendChild(alertDiv);
+
+                            setTimeout(() => {
+                                location.reload();
+                            }, 1500);
+                        } else {
+                            throw new Error('Failed to cancel order');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        btn.disabled = false;
+                        btn.innerHTML = originalText;
+                        alert('Failed to cancel order. Please try again later.')
+;                                                                                                   });
             }
+
+            async function reorderItems() {
+                if (!confirm('Do you want to add all items from this order to your cart?')) {
+                    return;
+                }
+
+                const btn = document.querySelector('button[onclick="reorderItems()"]');
+                const originalText = btn.innerHTML;
+                btn.disabled = true;
+                btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Adding...';
+
+                try {
+                    const response = await fetch(`/api/orders/${orderId}/reorder`, {
+                        method: 'POST'
+                    });
+
+                    if (response.ok) {
+                        const alertDiv = document.createElement('div');
+                        alertDiv.className = 'alert alert-success position-fixed top-0 start-50 translate-middle-x mt-4 shadow-lg rounded-4 border-0 z-3';
+                        alertDiv.style.minWidth = '300px';
+                        alertDiv.innerHTML = '<i class="bi bi-check-circle-fill me-2"></i> Items added to cart!';
+                        document.body.appendChild(alertDiv);
+
+                        setTimeout(() => {
+                            window.location.href = '/cart';
+                        }, 1500);
+                    } else {
+                        const error = await response.text();
+                        alert('Failed to reorder: ' + error);
+                        btn.disabled = false;
+                        btn.innerHTML = originalText;
+                    }
+                } catch (error) {
+                    alert('Failed to reorder items. Please try again.');
+                    btn.disabled = false;
+                    btn.innerHTML = originalText;
+                }
+            }
+        </script>
         </script>
     </th:block>
 </body>
 
 </html>
-

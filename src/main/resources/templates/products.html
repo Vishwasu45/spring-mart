@@ -8,86 +8,207 @@
 
 <body>
     <div layout:fragment="content">
-        <div class="container my-5">
-            <div class="row">
-                <!-- Sidebar -->
-                <div class="col-md-3">
-                    <div class="card">
-                        <div class="card-header bg-primary text-white">
-                            <h5 class="mb-0"><i class="bi bi-funnel"></i> Filters</h5>
+        <!-- Header Section -->
+        <div class="bg-light py-5 mb-5">
+            <div class="container">
+                <div class="row align-items-center">
+                    <div class="col-md-6">
+                        <nav aria-label="breadcrumb">
+                            <ol class="breadcrumb mb-2">
+                                <li class="breadcrumb-item"><a href="/" class="text-decoration-none">Home</a></li>
+                                <li class="breadcrumb-item active" aria-current="page">Products</li>
+                            </ol>
+                        </nav>
+                        <h1 class="display-5 fw-bold mb-0">Our Collection</h1>
+                    </div>
+                    <div class="col-md-6 text-md-end mt-3 mt-md-0">
+                        <p class="text-muted mb-0">
+                            Showing <span class="fw-bold text-primary" th:text="${products.numberOfElements}">0</span>
+                            of
+                            <span th:text="${products.totalElements}">0</span> products
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="container mb-5">
+            <div class="row g-4">
+                <!-- Sidebar Filters -->
+                <div class="col-lg-3">
+                    <div class="card border-0 shadow-sm sticky-top" style="top: 100px; z-index: 100;">
+                        <div class="card-header bg-white border-bottom-0 pt-4 px-4">
+                            <h5 class="mb-0 fw-bold"><i class="bi bi-funnel text-primary me-2"></i> Filters</h5>
                         </div>
-                        <div class="card-body">
-                            <h6>Categories</h6>
-                            <div class="list-group list-group-flush">
-                                <a href="/products" class="list-group-item list-group-item-action"
-                                    th:classappend="${selectedCategoryId == null} ? 'active' : ''">
-                                    All Products
-                                </a>
-                                <a th:each="category : ${categories}" th:href="@{/products(categoryId=${category.id})}"
-                                    class="list-group-item list-group-item-action"
-                                    th:classappend="${selectedCategoryId == category.id} ? 'active' : ''"
-                                    th:text="${category.name}">
-                                    Category
-                                </a>
+                        <div class="card-body p-4">
+                            <div class="mb-4">
+                                <h6 class="fw-bold mb-3 text-uppercase small text-muted">Categories</h6>
+                                <div class="list-group list-group-flush">
+                                    <a href="/products"
+                                        class="list-group-item list-group-item-action border-0 rounded mb-1 px-3"
+                                        th:classappend="${selectedCategoryId == null} ? 'active bg-primary text-white' : ''">
+                                        <i class="bi bi-grid me-2"></i> All Products
+                                    </a>
+                                    <a th:each="category : ${categories}"
+                                        th:href="@{/products(categoryId=${category.id})}"
+                                        class="list-group-item list-group-item-action border-0 rounded mb-1 px-3"
+                                        th:classappend="${selectedCategoryId == category.id} ? 'active bg-primary text-white' : ''">
+                                        <i class="bi bi-tag me-2"></i> <span th:text="${category.name}">Category</span>
+                                        <span class="badge bg-light text-dark float-end rounded-pill"
+                                            th:text="${category.productCount}">0</span>
+                                    </a>
+                                </div>
                             </div>
+
+                            <!-- Price Filter -->
+                            <div class="mb-4">
+                                <h6 class="fw-bold mb-3 text-uppercase small text-muted">Price Range</h6>
+                                <div class="d-flex align-items-center gap-2">
+                                    <input type="number" id="minPrice" class="form-control form-control-sm" placeholder="Min" min="0">
+                                    <span>-</span>
+                                    <input type="number" id="maxPrice" class="form-control form-control-sm" placeholder="Max" min="0">
+                                </div>
+                            </div>
+
+                            <!-- Rating Filter -->
+                            <div class="mb-4">
+                                <h6 class="fw-bold mb-3 text-uppercase small text-muted">Minimum Rating</h6>
+                                <select id="minRating" class="form-select form-select-sm">
+                                    <option value="">Any Rating</option>
+                                    <option value="4">4+ Stars</option>
+                                    <option value="3">3+ Stars</option>
+                                    <option value="2">2+ Stars</option>
+                                    <option value="1">1+ Stars</option>
+                                </select>
+                            </div>
+
+                            <!-- Stock Filter -->
+                            <div class="mb-4">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="inStock">
+                                    <label class="form-check-label" for="inStock">
+                                        In Stock Only
+                                    </label>
+                                </div>
+                                <div class="form-check mt-2">
+                                    <input class="form-check-input" type="checkbox" id="onSale">
+                                    <label class="form-check-label" for="onSale">
+                                        On Sale
+                                    </label>
+                                </div>
+                            </div>
+
+                            <button class="btn btn-primary w-100 mb-2" onclick="applyFilters()">
+                                <i class="bi bi-check2 me-2"></i> Apply Filters
+                            </button>
+                            <button class="btn btn-outline-secondary w-100" onclick="clearFilters()">
+                                <i class="bi bi-x-circle me-2"></i> Clear All
+                            </button>
                         </div>
                     </div>
                 </div>
 
                 <!-- Products Grid -->
-                <div class="col-md-9">
+                <div class="col-lg-9">
                     <div class="d-flex justify-content-between align-items-center mb-4">
-                        <h2>
+                        <h4 class="mb-0 fw-bold">
                             <span th:if="${searchKeyword != null}"
                                 th:text="'Search Results for: ' + ${searchKeyword}">Products</span>
-                            <span th:unless="${searchKeyword != null}">Products</span>
-                        </h2>
-                        <p class="text-muted mb-0">
-                            Showing <span th:text="${products.numberOfElements}">0</span> of
-                            <span th:text="${products.totalElements}">0</span> products
-                        </p>
+                            <span th:unless="${searchKeyword != null}">All Products</span>
+                        </h4>
+
+                        <div class="d-flex align-items-center gap-2">
+                            <span class="text-muted small">Sort by:</span>
+                            <select id="sortBy" class="form-select form-select-sm" style="width: auto;" onchange="applyFilters()">
+                                <option value="newest">Newest</option>
+                                <option value="price_asc">Price: Low to High</option>
+                                <option value="price_desc">Price: High to Low</option>
+                                <option value="rating_desc">Top Rated</option>
+                                <option value="name_asc">Name: A to Z</option>
+                            </select>
+                        </div>
                     </div>
 
-                    <div th:if="${products.isEmpty()}" class="alert alert-info">
-                        <i class="bi bi-info-circle"></i> No products found.
+                    <div th:if="${products.isEmpty()}" class="text-center py-5">
+                        <div class="mb-4">
+                            <i class="bi bi-search text-muted" style="font-size: 4rem; opacity: 0.2;"></i>
+                        </div>
+                        <h3>No products found</h3>
+                        <p class="text-muted">Try adjusting your search or filters to find what you're looking for.</p>
+                        <a href="/products" class="btn btn-primary mt-3">Clear Filters</a>
                     </div>
 
-                    <div class="row g-4">
-                        <div class="col-md-4" th:each="product : ${products}">
-                            <div class="card product-card h-100">
-                                <img th:src="${product.primaryImageUrl != null ? product.primaryImageUrl : 'https://via.placeholder.com/300x200?text=' + product.name}"
-                                    class="card-img-top product-image" th:alt="${product.name}">
-                                <div class="card-body d-flex flex-column">
-                                    <span class="badge bg-secondary mb-2 align-self-start"
-                                        th:text="${product.categoryName}">Category</span>
-                                    <h5 class="card-title" th:text="${product.name}">Product Name</h5>
-                                    <p class="card-text text-muted small"
-                                        th:text="${#strings.abbreviate(product.description, 100)}">Description</p>
+                    <div class="row g-4" id="productsContainer">
+                        <div class="col-md-6 col-lg-4" th:each="product : ${products}">
+                            <div class="card product-card border-0 shadow-sm h-100">
+                                <div class="product-image-wrapper">
+                                    <img th:src="${product.primaryImageUrl != null ? product.primaryImageUrl : 'https://via.placeholder.com/300x200?text=' + product.name}"
+                                        class="product-image" th:alt="${product.name}">
+
+                                    <!-- Badges -->
+                                    <div class="position-absolute top-0 start-0 m-3 d-flex flex-column gap-2">
+                                        <span class="badge bg-danger rounded-pill shadow-sm"
+                                            th:if="${product.discountPercentage > 0}">
+                                            -<span th:text="${product.discountPercentage}">20</span>%
+                                        </span>
+                                        <span class="badge bg-warning text-dark rounded-pill shadow-sm"
+                                            th:if="${product.averageRating >= 4.5}">
+                                            <i class="bi bi-star-fill"></i> Top Rated
+                                        </span>
+                                    </div>
+
+                                    <button
+                                        class="btn btn-light rounded-circle position-absolute top-0 end-0 m-3 shadow-sm wishlist-btn"
+                                        style="width: 35px; height: 35px; padding: 0; opacity: 0.9;"
+                                        th:attr="data-product-id=${product.id}"
+                                        sec:authorize="isAuthenticated()"
+                                        onclick="toggleWishlist(this.dataset.productId, this.querySelector('i'))">
+                                        <i class="bi bi-heart"></i>
+                                    </button>
+                                </div>
+                                <div class="card-body p-4 d-flex flex-column">
+                                    <div class="mb-2">
+                                        <span
+                                            class="badge bg-light text-primary border border-primary-subtle rounded-pill"
+                                            th:text="${product.categoryName}">Category</span>
+                                    </div>
+                                    <h5 class="card-title fw-bold mb-2 text-truncate" th:text="${product.name}">Product
+                                        Name</h5>
+                                    <p class="card-text text-muted small mb-3"
+                                        th:text="${#strings.abbreviate(product.description, 80)}">Description</p>
 
                                     <div class="mt-auto">
-                                        <div class="mb-2" th:if="${product.averageRating > 0}">
-                                            <i class="bi bi-star-fill text-warning"></i>
-                                            <span
+                                        <div class="d-flex align-items-center mb-3">
+                                            <i class="bi bi-star-fill text-warning small me-1"></i>
+                                            <span class="fw-bold small me-1"
                                                 th:text="${#numbers.formatDecimal(product.averageRating, 1, 1)}">4.5</span>
-                                            <small class="text-muted"
-                                                th:text="'(' + ${product.reviewCount} + ')'"></small>
+                                            <span class="text-muted small"
+                                                th:text="'(' + ${product.reviewCount} + ')'">(120)</span>
                                         </div>
 
-                                        <div class="d-flex justify-content-between align-items-center mb-3">
-                                            <span class="h4 mb-0 text-primary"
-                                                th:text="'$' + ${product.price}">$99.99</span>
-                                            <span class="text-muted small" th:if="${product.stockQuantity > 0}">
-                                                <i class="bi bi-check-circle text-success"></i> In Stock
-                                            </span>
-                                            <span class="text-danger small" th:unless="${product.stockQuantity > 0}">
-                                                <i class="bi bi-x-circle"></i> Out of Stock
-                                            </span>
-                                        </div>
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <div>
+                                                <span class="h5 fw-bold text-primary mb-0"
+                                                    th:if="${product.discountPercentage == 0}"
+                                                    th:text="'$' + ${product.price}">$99.99</span>
+                                                <div th:if="${product.discountPercentage > 0}">
+                                                    <span class="h5 fw-bold text-danger mb-0"
+                                                        th:text="'$' + ${#numbers.formatDecimal(product.price * (100 - product.discountPercentage) / 100, 1, 2)}">$79.99</span>
+                                                    <small class="text-muted text-decoration-line-through ms-1"
+                                                        th:text="'$' + ${product.price}">$99.99</small>
+                                                </div>
+                                            </div>
 
-                                        <a th:href="@{/products/{slug}(slug=${product.slug})}"
-                                            class="btn btn-primary w-100">
-                                            View Details
-                                        </a>
+                                            <div th:if="${product.stockQuantity > 0}">
+                                                <a th:href="@{/products/{slug}(slug=${product.slug})}"
+                                                    class="btn btn-outline-primary rounded-pill btn-sm px-3">
+                                                    View
+                                                </a>
+                                            </div>
+                                            <div th:unless="${product.stockQuantity > 0}">
+                                                <span class="badge bg-secondary rounded-pill">Out of Stock</span>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -95,26 +216,29 @@
                     </div>
 
                     <!-- Pagination -->
-                    <nav th:if="${products.totalPages > 1}" class="mt-4">
+                    <nav th:if="${products.totalPages > 1}" class="mt-5">
                         <ul class="pagination justify-content-center">
                             <li class="page-item" th:classappend="${products.first} ? 'disabled'">
-                                <a class="page-link"
+                                <a class="page-link rounded-circle mx-1 d-flex align-items-center justify-content-center"
+                                    style="width: 40px; height: 40px;"
                                     th:href="@{/products(page=${products.number - 1}, categoryId=${selectedCategoryId}, search=${searchKeyword})}">
-                                    Previous
+                                    <i class="bi bi-chevron-left"></i>
                                 </a>
                             </li>
 
                             <li class="page-item" th:each="i : ${#numbers.sequence(0, products.totalPages - 1)}"
                                 th:classappend="${i == products.number} ? 'active'">
-                                <a class="page-link"
+                                <a class="page-link rounded-circle mx-1 d-flex align-items-center justify-content-center"
+                                    style="width: 40px; height: 40px;"
                                     th:href="@{/products(page=${i}, categoryId=${selectedCategoryId}, search=${searchKeyword})}"
                                     th:text="${i + 1}">1</a>
                             </li>
 
                             <li class="page-item" th:classappend="${products.last} ? 'disabled'">
-                                <a class="page-link"
+                                <a class="page-link rounded-circle mx-1 d-flex align-items-center justify-content-center"
+                                    style="width: 40px; height: 40px;"
                                     th:href="@{/products(page=${products.number + 1}, categoryId=${selectedCategoryId}, search=${searchKeyword})}">
-                                    Next
+                                    <i class="bi bi-chevron-right"></i>
                                 </a>
                             </li>
                         </ul>
@@ -123,6 +247,188 @@
             </div>
         </div>
     </div>
+
+    <script layout:fragment="script" th:inline="javascript">
+        const categoryId = [[${selectedCategoryId}]];
+        const searchKeyword = [[${searchKeyword}]];
+        let currentPage = 0;
+
+        // Load wishlist status for all products
+        document.addEventListener('DOMContentLoaded', function() {
+            const wishlistButtons = document.querySelectorAll('.wishlist-btn');
+            wishlistButtons.forEach(button => {
+                const productId = button.dataset.productId;
+                if (productId) {
+                    checkWishlistStatus(productId, button.querySelector('i'));
+                }
+            });
+        });
+
+        async function applyFilters() {
+            const minPrice = document.getElementById('minPrice').value;
+            const maxPrice = document.getElementById('maxPrice').value;
+            const minRating = document.getElementById('minRating').value;
+            const inStock = document.getElementById('inStock').checked;
+            const onSale = document.getElementById('onSale').checked;
+            const sortBy = document.getElementById('sortBy').value;
+
+            const filterRequest = {
+                minPrice: minPrice ? parseFloat(minPrice) : null,
+                maxPrice: maxPrice ? parseFloat(maxPrice) : null,
+                minRating: minRating ? parseInt(minRating) : null,
+                inStock: inStock || null,
+                onSale: onSale || null,
+                sortBy: sortBy,
+                page: currentPage,
+                size: 12
+            };
+
+            // Add category filter if on category page
+            if (categoryId) {
+                filterRequest.categoryIds = [categoryId];
+            }
+
+            try {
+                const response = await fetch('/api/products/filter', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(filterRequest)
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    displayProducts(data);
+                }
+            } catch (error) {
+                console.error('Error applying filters:', error);
+            }
+        }
+
+        function clearFilters() {
+            document.getElementById('minPrice').value = '';
+            document.getElementById('maxPrice').value = '';
+            document.getElementById('minRating').value = '';
+            document.getElementById('inStock').checked = false;
+            document.getElementById('onSale').checked = false;
+            document.getElementById('sortBy').value = 'newest';
+            
+            // Reload page to clear filters
+            if (categoryId) {
+                window.location.href = `/products?categoryId=${categoryId}`;
+            } else if (searchKeyword) {
+                window.location.href = `/products?search=${searchKeyword}`;
+            } else {
+                window.location.href = '/products';
+            }
+        }
+
+        function displayProducts(page) {
+            const container = document.getElementById('productsContainer');
+            
+            if (page.content.length === 0) {
+                container.innerHTML = `
+                    <div class="col-12 text-center py-5">
+                        <i class="bi bi-search text-muted" style="font-size: 4rem; opacity: 0.2;"></i>
+                        <h3>No products found</h3>
+                        <p class="text-muted">Try adjusting your filters.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = page.content.map(product => createProductCard(product)).join('');
+            
+            // Re-check wishlist status for new products
+            setTimeout(() => {
+                const wishlistButtons = document.querySelectorAll('.wishlist-btn');
+                wishlistButtons.forEach(button => {
+                    const productId = button.dataset.productId;
+                    if (productId) {
+                        checkWishlistStatus(productId, button.querySelector('i'));
+                    }
+                });
+            }, 100);
+        }
+
+        function createProductCard(product) {
+            const discountedPrice = product.discountPercentage > 0 
+                ? (product.price * (100 - product.discountPercentage) / 100).toFixed(2)
+                : product.price.toFixed(2);
+
+            return `
+                <div class="col-md-6 col-lg-4">
+                    <div class="card product-card border-0 shadow-sm h-100 hover-lift transition-all">
+                        <div class="product-image-wrapper position-relative">
+                            <img src="${product.primaryImageUrl || 'https://via.placeholder.com/300x200?text=' + product.name}"
+                                class="product-image" alt="${escapeHtml(product.name)}">
+                            ${product.discountPercentage > 0 ? `
+                                <span class="position-absolute top-0 start-0 badge bg-danger m-3 px-3 py-2 rounded-pill shadow-sm">
+                                    -${product.discountPercentage}%
+                                </span>
+                            ` : ''}
+                            <button class="btn btn-light rounded-circle position-absolute top-0 end-0 m-3 shadow-sm wishlist-btn"
+                                style="width: 35px; height: 35px; padding: 0; opacity: 0.9;"
+                                data-product-id="${product.id}"
+                                onclick="toggleWishlist(${product.id}, this.querySelector('i'))">
+                                <i class="bi bi-heart"></i>
+                            </button>
+                        </div>
+                        <div class="card-body p-4 d-flex flex-column">
+                            <div class="mb-2">
+                                <span class="badge bg-light text-primary border border-primary-subtle rounded-pill">
+                                    ${escapeHtml(product.categoryName)}
+                                </span>
+                            </div>
+                            <h5 class="card-title fw-bold mb-2 text-truncate">${escapeHtml(product.name)}</h5>
+                            <div class="mt-auto">
+                                <div class="d-flex align-items-center mb-3">
+                                    <i class="bi bi-star-fill text-warning small me-1"></i>
+                                    <span class="fw-bold small me-1">${product.averageRating.toFixed(1)}</span>
+                                    <span class="text-muted small">(${product.reviewCount})</span>
+                                </div>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        ${product.discountPercentage > 0 ? `
+                                            <span class="h5 fw-bold text-danger mb-0">$${discountedPrice}</span>
+                                            <small class="text-muted text-decoration-line-through ms-1">$${product.price.toFixed(2)}</small>
+                                        ` : `
+                                            <span class="h5 fw-bold text-primary mb-0">$${product.price.toFixed(2)}</span>
+                                        `}
+                                    </div>
+                                    <a href="/products/${product.id}" class="btn btn-primary rounded-pill px-4">
+                                        <i class="bi bi-eye me-1"></i> View
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        async function checkWishlistStatus(productId, heartIcon) {
+            try {
+                const response = await fetch(`/api/wishlist/check/${productId}`);
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data.inWishlist && heartIcon) {
+                        heartIcon.classList.remove('bi-heart');
+                        heartIcon.classList.add('bi-heart-fill', 'text-danger');
+                    }
+                }
+            } catch (error) {
+                console.error('Error checking wishlist status:', error);
+            }
+        }
+    </script>
 </body>
 
 </html>

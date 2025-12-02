@@ -10,116 +10,325 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Bootstrap Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
     <style>
+        * {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+        }
+
         body {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: #f8f9fa;
             min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
+            position: relative;
+            padding: 2rem 1rem;
+        }
+
+        .login-container {
+            position: relative;
+            z-index: 1;
+            max-width: 480px;
+            width: 100%;
+            padding: 0 1rem;
         }
 
         .login-card {
             background: white;
-            border-radius: 1rem;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-            max-width: 450px;
-            width: 100%;
-        }
-
-        .oauth-btn {
-            padding: 0.75rem;
-            font-size: 1rem;
             border-radius: 0.5rem;
-            transition: all 0.3s;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.06);
+            overflow: hidden;
+            border: 1px solid #e5e7eb;
+            animation: fadeIn 0.4s ease-out;
         }
 
-        .oauth-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .login-header {
+            padding: 3rem 2rem 2rem;
+            text-align: center;
+            background: white;
+        }
+
+        .login-header h1 {
+            color: #202124;
+            font-size: 2rem;
+            font-weight: 400;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .login-header h1 i {
+            color: #6366f1;
+            font-size: 2rem;
+        }
+
+        .login-header p {
+            color: #5f6368;
+            margin: 0;
+            font-size: 1rem;
+            font-weight: 400;
+        }
+
+        .login-body {
+            padding: 2.5rem 2rem;
+        }
+
+        .alert {
+            border: none;
+            border-radius: 0.5rem;
+            padding: 0.875rem 1rem;
+            font-size: 0.875rem;
+            display: flex;
+            align-items: center;
+            gap: 0.625rem;
+        }
+
+        .alert-danger {
+            background: #fef2f2;
+            color: #991b1b;
+            border: 1px solid #fee2e2;
+        }
+
+        .alert-success {
+            background: #f0fdf4;
+            color: #166534;
+            border: 1px solid #bbf7d0;
+        }
+
+        .alert i {
+            font-size: 1.125rem;
         }
 
         .google-btn {
-            background-color: #fff;
-            border: 2px solid #ddd;
-            color: #444;
+            background: white;
+            border: 1px solid #dadce0;
+            color: #3c4043;
+            padding: 0.875rem 1.5rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+            border-radius: 0.25rem;
+            transition: all 0.15s ease-in-out;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
+            text-decoration: none;
+            letter-spacing: 0.25px;
         }
 
         .google-btn:hover {
-            background-color: #f8f9fa;
-            border-color: #4285f4;
+            background: #f8f9fa;
+            box-shadow: 0 1px 3px rgba(60, 64, 67, 0.3);
+            border-color: #d2e3fc;
+            color: #174ea6;
         }
 
-        .github-btn {
-            background-color: #24292e;
-            border: 2px solid #24292e;
-            color: white;
+        .google-btn:active {
+            background: #f1f3f4;
+            box-shadow: 0 1px 2px rgba(60, 64, 67, 0.3);
         }
 
-        .github-btn:hover {
-            background-color: #2f363d;
+        .google-btn i {
+            font-size: 1.25rem;
+        }
+
+        .divider {
+            display: flex;
+            align-items: center;
+            text-align: center;
+            margin: 1.5rem 0;
+            color: #5f6368;
+            font-size: 0.875rem;
+        }
+
+        .divider::before,
+        .divider::after {
+            content: '';
+            flex: 1;
+            border-bottom: 1px solid #dadce0;
+        }
+
+        .divider span {
+            padding: 0 1rem;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 0.75rem;
+            margin-top: 1.5rem;
+        }
+
+        .feature-item {
+            background: #f8f9fa;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            text-align: center;
+            border: 1px solid #e8eaed;
+            transition: all 0.2s ease;
+        }
+
+        .feature-item:hover {
+            background: white;
+            box-shadow: 0 1px 2px rgba(60, 64, 67, 0.1);
+        }
+
+        .feature-item i {
+            font-size: 1.5rem;
+            color: #6366f1;
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+
+        .feature-item h6 {
+            font-size: 0.8125rem;
+            font-weight: 500;
+            color: #202124;
+            margin: 0;
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            text-decoration: none;
+            color: #1a73e8;
+            font-weight: 500;
+            margin-top: 1.5rem;
+            padding: 0.625rem 1rem;
+            background: transparent;
+            border-radius: 0.25rem;
+            transition: all 0.2s;
+            font-size: 0.875rem;
+        }
+
+        .back-link:hover {
+            background: #f1f3f4;
+            color: #174ea6;
+        }
+
+        .security-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: #e8f5e9;
+            color: #1e8e3e;
+            padding: 0.5rem 1rem;
+            border-radius: 1rem;
+            font-size: 0.8125rem;
+            font-weight: 500;
+            margin-top: 1rem;
+            border: 1px solid #c8e6c9;
+        }
+
+        .security-badge i {
+            font-size: 1rem;
+        }
+
+        @media (max-width: 576px) {
+            .login-header {
+                padding: 2rem 1.5rem;
+            }
+
+            .login-header h1 {
+                font-size: 2rem;
+            }
+
+            .login-body {
+                padding: 2rem 1.5rem;
+            }
+
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
 
 <body>
-    <div class="container">
-        <div class="login-card mx-auto p-5">
-            <div class="text-center mb-4">
-                <h1 class="display-5 fw-bold text-primary">
-                    <i class="bi bi-cart-check"></i> SpringMart
+    <div class="login-container">
+        <div class="login-card">
+            <div class="login-header">
+                <h1>
+                    <i class="bi bi-cart-check-fill"></i> SpringMart
                 </h1>
-                <p class="text-muted">Sign in to continue shopping</p>
+                <p>Welcome back! Sign in to continue shopping</p>
             </div>
 
-            <div th:if="${param.error}" class="alert alert-danger" role="alert">
-                <i class="bi bi-exclamation-triangle-fill"></i>
-                Invalid credentials or authentication failed.
-            </div>
+            <div class="login-body">
+                <div th:if="${param.error}" class="alert alert-danger" role="alert">
+                    <i class="bi bi-exclamation-circle-fill"></i>
+                    <span>Authentication failed. Please try again.</span>
+                </div>
 
-            <div th:if="${param.logout}" class="alert alert-success" role="alert">
-                <i class="bi bi-check-circle-fill"></i>
-                You have been logged out successfully.
-            </div>
+                <div th:if="${param.logout}" class="alert alert-success" role="alert">
+                    <i class="bi bi-check-circle-fill"></i>
+                    <span>You have been logged out successfully.</span>
+                </div>
 
-            <div class="d-grid gap-3">
-                <a href="/oauth2/authorization/google" class="btn oauth-btn google-btn">
-                    <i class="bi bi-google"></i> Continue with Google
+                <a href="/oauth2/authorization/google" class="google-btn">
+                    <i class="bi bi-google"></i>
+                    <span>Continue with Google</span>
                 </a>
 
-                <a href="/oauth2/authorization/github" class="btn oauth-btn github-btn">
-                    <i class="bi bi-github"></i> Continue with GitHub
+                <a href="/products" class="google-btn" style="background: #6c757d; border-color: #6c757d; margin-top: 0.75rem;">
+                    <i class="bi bi-person"></i>
+                    <span>Continue as Guest</span>
                 </a>
+
+                <div class="divider">
+                    <span>Why sign in?</span>
+                </div>
+
+                <div class="features-grid">
+                    <div class="feature-item">
+                        <i class="bi bi-cart-check-fill"></i>
+                        <h6>Track Orders</h6>
+                    </div>
+                    <div class="feature-item">
+                        <i class="bi bi-heart-fill"></i>
+                        <h6>Save Favorites</h6>
+                    </div>
+                    <div class="feature-item">
+                        <i class="bi bi-lightning-charge-fill"></i>
+                        <h6>Fast Checkout</h6>
+                    </div>
+                    <div class="feature-item">
+                        <i class="bi bi-gift-fill"></i>
+                        <h6>Exclusive Deals</h6>
+                    </div>
+                </div>
+
+                <div class="text-center">
+                    <div class="security-badge">
+                        <i class="bi bi-shield-check"></i>
+                        <span>Secure & Private</span>
+                    </div>
+                </div>
+
+                <div class="text-center">
+                    <a href="/" class="back-link">
+                        <i class="bi bi-arrow-left"></i>
+                        <span>Back to Home</span>
+                    </a>
+                </div>
             </div>
-
-            <hr class="my-4">
-
-            <div class="text-center">
-                <p class="text-muted small mb-3">
-                    <i class="bi bi-shield-check"></i> Secure OAuth2 Authentication
-                </p>
-                <a href="/" class="text-decoration-none">
-                    <i class="bi bi-arrow-left"></i> Back to Home
-                </a>
-            </div>
-
-            <div class="mt-4 p-3 bg-light rounded">
-                <h6 class="text-center mb-2">Learning Features</h6>
-                <ul class="small text-muted mb-0">
-                    <li>OAuth2 Client Integration</li>
-                    <li>JWT Token Generation</li>
-                    <li>Spring Security Configuration</li>
-                    <li>Role-Based Access Control</li>
-                </ul>
-            </div>
-        </div>
-
-        <div class="text-center mt-4 text-white">
-            <p class="mb-1">
-                <i class="bi bi-info-circle"></i> Demo Project - Spring Boot Learning
-            </p>
-            <small>Built with Spring Boot 3, Spring Security, OAuth2 & JWT</small>
         </div>
     </div>
 

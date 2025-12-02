@@ -26,5 +26,9 @@ public class CreateOrderRequest {
 
     @NotBlank(message = "Shipping country is required")
     private String shippingCountry;
+
+    private String promoCode; // Optional promo code
+    
+    private String guestEmail; // Required for guest orders
 }
 

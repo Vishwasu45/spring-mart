@@ -3,6 +3,7 @@ package com.springmart.service;
 import com.springmart.dto.CartItemDTO;
 import com.springmart.entity.CartItem;
 import com.springmart.entity.Product;
+import com.springmart.entity.ProductImage;
 import com.springmart.entity.User;
 import com.springmart.exception.InsufficientStockException;
 import com.springmart.exception.ResourceNotFoundException;
@@ -118,9 +119,9 @@ public class CartService {
                 .multiply(BigDecimal.valueOf(cartItem.getQuantity()));
 
         String imageUrl = cartItem.getProduct().getImages().stream()
-                .filter(img -> img.getIsPrimary())
+                .filter(ProductImage::getIsPrimary)
                 .findFirst()
-                .map(img -> img.getImageUrl())
+                .map(ProductImage::getImageUrl)
                 .orElse(null);
 
         return CartItemDTO.builder()

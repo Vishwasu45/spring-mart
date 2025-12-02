@@ -1,6 +1,7 @@
 package com.springmart.controller.api;
 
 import com.springmart.dto.ProductDTO;
+import com.springmart.dto.ProductFilterRequest;
 import com.springmart.security.CustomOAuth2User;
 import com.springmart.service.ProductService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -73,6 +74,12 @@ public class ProductController {
     public ResponseEntity<List<ProductDTO>> getTopRatedProducts(
             @RequestParam(defaultValue = "8") int limit) {
         return ResponseEntity.ok(productService.getTopRatedProducts(limit));
+    }
+
+    @PostMapping("/filter")
+    @Operation(summary = "Filter products", description = "Filter products by various criteria")
+    public ResponseEntity<Page<ProductDTO>> filterProducts(@RequestBody ProductFilterRequest filterRequest) {
+        return ResponseEntity.ok(productService.getFilteredProducts(filterRequest));
     }
 
     @PostMapping

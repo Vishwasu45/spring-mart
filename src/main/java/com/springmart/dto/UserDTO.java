@@ -21,6 +21,9 @@ public class UserDTO {
     private String providerId;
     private String imageUrl;
     private List<String> roles;
+    private Boolean emailNotificationsEnabled;
+    private Boolean emailSubscriptionConfirmed;
+    private LocalDateTime emailSubscribedAt;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 }

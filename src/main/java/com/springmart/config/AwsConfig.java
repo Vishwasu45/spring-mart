@@ -8,7 +8,11 @@ import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.auth.credentials.AwsCredentialsProvider;
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
 import software.amazon.awssdk.regions.Region;
+import software.amazon.awssdk.services.cloudwatch.CloudWatchClient;
+import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
+import software.amazon.awssdk.services.lambda.LambdaClient;
 import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.ses.SesClient;
 import software.amazon.awssdk.services.sns.SnsClient;
 import software.amazon.awssdk.services.sqs.SqsClient;
 
@@ -73,6 +77,70 @@ public class AwsConfig {
 
         if (useLocalStack && !endpoint.isEmpty()) {
             log.info("Using LocalStack for SNS at: {}", endpoint);
+            builder.endpointOverride(URI.create(endpoint))
+                    .credentialsProvider(localStackCredentials());
+        } else if (!accessKey.isEmpty() && !secretKey.isEmpty()) {
+            builder.credentialsProvider(awsCredentials());
+        }
+
+        return builder.build();
+    }
+
+    @Bean
+    public DynamoDbClient dynamoDbClient() {
+        var builder = DynamoDbClient.builder()
+                .region(Region.of(region));
+
+        if (useLocalStack && !endpoint.isEmpty()) {
+            log.info("Using LocalStack for DynamoDB at: {}", endpoint);
+            builder.endpointOverride(URI.create(endpoint))
+                    .credentialsProvider(localStackCredentials());
+        } else if (!accessKey.isEmpty() && !secretKey.isEmpty()) {
+            builder.credentialsProvider(awsCredentials());
+        }
+
+        return builder.build();
+    }
+
+    @Bean
+    public CloudWatchClient cloudWatchClient() {
+        var builder = CloudWatchClient.builder()
+                .region(Region.of(region));
+
+        if (useLocalStack && !endpoint.isEmpty()) {
+            log.info("Using LocalStack for CloudWatch at: {}", endpoint);
+            builder.endpointOverride(URI.create(endpoint))
+                    .credentialsProvider(localStackCredentials());
+        } else if (!accessKey.isEmpty() && !secretKey.isEmpty()) {
+            builder.credentialsProvider(awsCredentials());
+        }
+
+        return builder.build();
+    }
+
+    @Bean
+    public LambdaClient lambdaClient() {
+        var builder = LambdaClient.builder()
+                .region(Region.of(region));
+
+        if (useLocalStack && !endpoint.isEmpty()) {
+            log.info("Using LocalStack for Lambda at: {}", endpoint);
+            builder.endpointOverride(URI.create(endpoint))
+                    .credentialsProvider(localStackCredentials());
+        } else if (!accessKey.isEmpty() && !secretKey.isEmpty()) {
+            builder.credentialsProvider(awsCredentials());
+        }
+
+        return builder.build();
+    }
+
+    @Bean
+    public SesClient sesClient() {
+        var builder = SesClient.builder()
+                .region(Region.of(region));
+
+        if (useLocalStack && !endpoint.isEmpty()) {
+            log.info("Using LocalStack for SES at: {}", endpoint);
             builder.endpointOverride(URI.create(endpoint))
                     .credentialsProvider(localStackCredentials());
         } else if (!accessKey.isEmpty() && !secretKey.isEmpty()) {

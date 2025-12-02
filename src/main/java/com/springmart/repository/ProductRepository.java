@@ -8,11 +8,13 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface ProductRepository extends JpaRepository<Product, Long> {
+public interface ProductRepository extends JpaRepository<Product, Long>, ProductRepositoryCustom {
 
     Optional<Product> findBySlug(String slug);
 
@@ -41,4 +43,30 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     List<Product> findProductsOnSale(Pageable pageable);
 
     long countByCategoryIdAndIsActiveTrue(Long categoryId);
+
+    // Recommendation queries
+    @Query("SELECT p FROM Product p WHERE p.category.id = :categoryId AND p.isActive = true " +
+            "AND p.price BETWEEN :minPrice AND :maxPrice ORDER BY p.averageRating DESC")
+    List<Product> findByCategoryAndPriceRange(
+            @Param("categoryId") Long categoryId,
+            @Param("minPrice") BigDecimal minPrice,
+            @Param("maxPrice") BigDecimal maxPrice,
+            Pageable pageable);
+
+    @Query("SELECT DISTINCT p.category.id FROM Order o JOIN o.items oi JOIN oi.product p " +
+            "WHERE o.user.id = :userId")
+    List<Long> findCategoriesByUserOrders(@Param("userId") Long userId);
+
+    @Query("SELECT p FROM Product p WHERE p.category.id IN :categoryIds AND p.isActive = true " +
+            "ORDER BY p.averageRating DESC, p.reviewCount DESC")
+    List<Product> findTopRatedByCategories(
+            @Param("categoryIds") List<Long> categoryIds,
+            Pageable pageable);
+
+    @Query("SELECT p FROM Product p JOIN p.items oi JOIN oi.order o " +
+            "WHERE o.createdAt > :since AND p.isActive = true " +
+            "GROUP BY p.id ORDER BY COUNT(o.id) DESC")
+    List<Product> findTrendingProducts(
+            @Param("since") LocalDateTime since,
+            Pageable pageable);
 }

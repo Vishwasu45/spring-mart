@@ -8,37 +8,71 @@
 
 <body>
     <div layout:fragment="content">
-        <div class="container my-5">
-            <div class="row">
+        <!-- Header Section -->
+        <div class="bg-light py-5 mb-5">
+            <div class="container">
+                <div class="row align-items-center">
+                    <div class="col-md-6">
+                        <nav aria-label="breadcrumb">
+                            <ol class="breadcrumb mb-2">
+                                <li class="breadcrumb-item"><a href="/" class="text-decoration-none">Home</a></li>
+                                <li class="breadcrumb-item active" aria-current="page">My Profile</li>
+                            </ol>
+                        </nav>
+                        <h1 class="display-5 fw-bold mb-0">Account Settings</h1>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="container mb-5">
+            <div class="row g-5">
                 <!-- Sidebar -->
-                <div class="col-lg-3 mb-4">
-                    <div class="card shadow-sm">
-                        <div class="card-body text-center">
-                            <div class="mb-3">
+                <div class="col-lg-3">
+                    <div class="card border-0 shadow-sm rounded-4 overflow-hidden sticky-top"
+                        style="top: 100px; z-index: 100;">
+                        <div class="card-body text-center p-4 bg-primary bg-opacity-10">
+                            <div class="mb-3 position-relative d-inline-block">
                                 <img th:src="${user.imageUrl != null and !#strings.isEmpty(user.imageUrl)} ? ${user.imageUrl} : ${'https://ui-avatars.com/api/?name=' + #strings.replace(user.name, ' ', '+') + '&amp;background=random'}"
-                                    class="rounded-circle img-thumbnail" alt="Profile Picture"
-                                    style="width: 100px; height: 100px; object-fit: cover;">
+                                    class="rounded-circle shadow-sm border border-4 border-white" alt="Profile Picture"
+                                    style="width: 120px; height: 120px; object-fit: cover;">
+                                <button
+                                    class="btn btn-sm btn-light rounded-circle position-absolute bottom-0 end-0 shadow-sm"
+                                    style="width: 32px; height: 32px; padding: 0;">
+                                    <i class="bi bi-camera-fill text-primary small"></i>
+                                </button>
                             </div>
-                            <h5 class="card-title" th:text="${user.name}">User Name</h5>
-                            <p class="text-muted small" th:text="${user.email}">user@example.com</p>
-                            <span th:each="role : ${user.roles}" class="badge bg-primary me-1"
-                                th:text="${role}">USER</span>
+                            <h5 class="fw-bold mb-1" th:text="${user.name}">User Name</h5>
+                            <p class="text-muted small mb-2" th:text="${user.email}">user@example.com</p>
+                            <div class="d-flex justify-content-center gap-1">
+                                <span th:each="role : ${user.roles}" class="badge bg-primary rounded-pill px-3"
+                                    th:text="${role}">USER</span>
+                            </div>
                         </div>
-                        <div class="list-group list-group-flush" id="profileTabs" role="tablist">
-                            <a class="list-group-item list-group-item-action active" id="info-tab" data-bs-toggle="list"
-                                href="#info" role="tab">
-                                <i class="bi bi-person me-2"></i> Profile Information
+                        <div class="list-group list-group-flush p-2" id="profileTabs" role="tablist">
+                            <a class="list-group-item list-group-item-action active rounded-3 mb-1 border-0 px-3 py-2 d-flex align-items-center"
+                                id="info-tab" data-bs-toggle="list" href="#info" role="tab">
+                                <i class="bi bi-person me-3 fs-5"></i> Profile Information
                             </a>
-                            <a href="/orders" class="list-group-item list-group-item-action">
-                                <i class="bi bi-box-seam me-2"></i> My Orders
+                            <a href="/orders"
+                                class="list-group-item list-group-item-action rounded-3 mb-1 border-0 px-3 py-2 d-flex align-items-center">
+                                <i class="bi bi-box-seam me-3 fs-5"></i> My Orders
                             </a>
-                            <a class="list-group-item list-group-item-action" id="addresses-tab" data-bs-toggle="list"
-                                href="#addresses" role="tab">
-                                <i class="bi bi-geo-alt me-2"></i> Addresses
+                            <a class="list-group-item list-group-item-action rounded-3 mb-1 border-0 px-3 py-2 d-flex align-items-center"
+                                id="addresses-tab" data-bs-toggle="list" href="#addresses" role="tab">
+                                <i class="bi bi-geo-alt me-3 fs-5"></i> Addresses
                             </a>
-                            <a class="list-group-item list-group-item-action" id="payments-tab" data-bs-toggle="list"
-                                href="#payments" role="tab">
-                                <i class="bi bi-credit-card me-2"></i> Payment Methods
+                            <a class="list-group-item list-group-item-action rounded-3 mb-1 border-0 px-3 py-2 d-flex align-items-center"
+                                id="payments-tab" data-bs-toggle="list" href="#payments" role="tab">
+                                <i class="bi bi-credit-card me-3 fs-5"></i> Payment Methods
+                            </a>
+                            <a class="list-group-item list-group-item-action rounded-3 mb-1 border-0 px-3 py-2 d-flex align-items-center"
+                                id="notifications-tab" data-bs-toggle="list" href="#notifications" role="tab">
+                                <i class="bi bi-bell me-3 fs-5"></i> Email Notifications
+                            </a>
+                            <a href="/logout"
+                                class="list-group-item list-group-item-action rounded-3 mb-1 border-0 px-3 py-2 d-flex align-items-center text-danger">
+                                <i class="bi bi-box-arrow-right me-3 fs-5"></i> Sign Out
                             </a>
                         </div>
                     </div>
@@ -49,33 +83,35 @@
                     <div class="tab-content" id="profileTabsContent">
                         <!-- Profile Info Tab -->
                         <div class="tab-pane fade show active" id="info" role="tabpanel">
-                            <div class="card shadow-sm mb-4">
-                                <div class="card-header bg-white py-3">
-                                    <h5 class="mb-0"><i class="bi bi-person-lines-fill me-2"></i> Profile Information
-                                    </h5>
+                            <div class="card border-0 shadow-sm rounded-4 mb-4">
+                                <div class="card-header bg-white border-bottom-0 pt-4 px-4">
+                                    <h5 class="mb-0 fw-bold">Personal Information</h5>
                                 </div>
-                                <div class="card-body">
+                                <div class="card-body p-4">
                                     <form>
-                                        <div class="row mb-3">
+                                        <div class="row g-4">
                                             <div class="col-md-6">
-                                                <label class="form-label text-muted">Full Name</label>
-                                                <input type="text" class="form-control" th:value="${user.name}"
-                                                    readonly>
+                                                <label class="form-label fw-bold text-muted small text-uppercase">Full
+                                                    Name</label>
+                                                <input type="text" class="form-control bg-light border-0"
+                                                    th:value="${user.name}" readonly>
                                             </div>
                                             <div class="col-md-6">
-                                                <label class="form-label text-muted">Email Address</label>
-                                                <input type="email" class="form-control" th:value="${user.email}"
-                                                    readonly>
-                                            </div>
-                                        </div>
-                                        <div class="row mb-3">
-                                            <div class="col-md-6">
-                                                <label class="form-label text-muted">Phone Number</label>
-                                                <input type="text" class="form-control" value="Not provided" readonly>
+                                                <label class="form-label fw-bold text-muted small text-uppercase">Email
+                                                    Address</label>
+                                                <input type="email" class="form-control bg-light border-0"
+                                                    th:value="${user.email}" readonly>
                                             </div>
                                             <div class="col-md-6">
-                                                <label class="form-label text-muted">Member Since</label>
-                                                <input type="text" class="form-control"
+                                                <label class="form-label fw-bold text-muted small text-uppercase">Phone
+                                                    Number</label>
+                                                <input type="text" class="form-control bg-light border-0"
+                                                    value="Not provided" readonly>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label class="form-label fw-bold text-muted small text-uppercase">Member
+                                                    Since</label>
+                                                <input type="text" class="form-control bg-light border-0"
                                                     th:value="${#temporals.format(user.createdAt, 'MMM dd, yyyy')}"
                                                     readonly>
                                             </div>
@@ -84,28 +120,28 @@
                                 </div>
                             </div>
 
-                            <div class="card shadow-sm">
-                                <div
-                                    class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
-                                    <h5 class="mb-0"><i class="bi bi-shield-lock me-2"></i> Account Security</h5>
+                            <div class="card border-0 shadow-sm rounded-4">
+                                <div class="card-header bg-white border-bottom-0 pt-4 px-4">
+                                    <h5 class="mb-0 fw-bold">Security Settings</h5>
                                 </div>
-                                <div class="card-body">
-                                    <div class="d-flex justify-content-between align-items-center mb-3">
+                                <div class="card-body p-4">
+                                    <div class="d-flex justify-content-between align-items-center mb-4">
                                         <div>
-                                            <h6 class="mb-1">Password</h6>
+                                            <h6 class="fw-bold mb-1">Password</h6>
                                             <p class="text-muted small mb-0">Last changed: Never</p>
                                         </div>
-                                        <button class="btn btn-outline-secondary btn-sm" disabled>Change
+                                        <button class="btn btn-outline-primary rounded-pill px-4" disabled>Change
                                             Password</button>
                                     </div>
-                                    <hr>
-                                    <div class="d-flex justify-content-between align-items-center">
+                                    <hr class="text-muted opacity-25">
+                                    <div class="d-flex justify-content-between align-items-center mt-4">
                                         <div>
-                                            <h6 class="mb-1">Two-Factor Authentication</h6>
+                                            <h6 class="fw-bold mb-1">Two-Factor Authentication</h6>
                                             <p class="text-muted small mb-0">Add an extra layer of security to your
                                                 account</p>
                                         </div>
-                                        <button class="btn btn-outline-secondary btn-sm" disabled>Enable</button>
+                                        <button class="btn btn-outline-primary rounded-pill px-4" disabled>Enable
+                                            2FA</button>
                                     </div>
                                 </div>
                             </div>
@@ -113,43 +149,57 @@
 
                         <!-- Addresses Tab -->
                         <div class="tab-pane fade" id="addresses" role="tabpanel">
-                            <div class="d-flex justify-content-between align-items-center mb-3">
-                                <h4 class="mb-0">My Addresses</h4>
-                                <button class="btn btn-primary btn-sm" data-bs-toggle="modal"
+                            <div class="d-flex justify-content-between align-items-center mb-4">
+                                <h4 class="mb-0 fw-bold">My Addresses</h4>
+                                <button class="btn btn-primary rounded-pill px-4" data-bs-toggle="modal"
                                     data-bs-target="#addAddressModal">
-                                    <i class="bi bi-plus-lg"></i> Add New Address
+                                    <i class="bi bi-plus-lg me-2"></i> Add New Address
                                 </button>
                             </div>
 
-                            <div class="row">
-                                <div class="col-md-6 mb-3" th:each="address : ${addresses}">
-                                    <div class="card h-100">
-                                        <div class="card-body">
-                                            <div class="d-flex justify-content-between align-items-start mb-2">
-                                                <h6 class="card-title mb-0">
-                                                    <i class="bi bi-house-door"></i>
+                            <div class="row g-4">
+                                <div class="col-md-6" th:each="address : ${addresses}">
+                                    <div class="card h-100 border-0 shadow-sm rounded-4 hover-lift transition-all">
+                                        <div class="card-body p-4">
+                                            <div class="d-flex justify-content-between align-items-start mb-3">
+                                                <div class="d-flex align-items-center gap-2">
+                                                    <div
+                                                        class="bg-primary bg-opacity-10 p-2 rounded-circle text-primary">
+                                                        <i class="bi bi-house-door-fill"></i>
+                                                    </div>
                                                     <span th:if="${address.default}"
-                                                        class="badge bg-success ms-2">Default</span>
-                                                </h6>
-                                                <button class="btn btn-link text-danger p-0"
-                                                    th:onclick="'deleteAddress(' + ${address.id} + ')'">
-                                                    <i class="bi bi-trash"></i>
-                                                </button>
+                                                        class="badge bg-success-subtle text-success border border-success-subtle rounded-pill">Default</span>
+                                                </div>
+                                                <div class="dropdown">
+                                                    <button class="btn btn-link text-muted p-0" type="button"
+                                                        data-bs-toggle="dropdown">
+                                                        <i class="bi bi-three-dots-vertical"></i>
+                                                    </button>
+                                                    <ul
+                                                        class="dropdown-menu dropdown-menu-end border-0 shadow-sm rounded-3">
+                                                        <li><a class="dropdown-item text-danger" href="#"
+                                                                th:onclick="'deleteAddress(' + ${address.id} + ')'">
+                                                                <i class="bi bi-trash me-2"></i> Delete
+                                                            </a></li>
+                                                    </ul>
+                                                </div>
                                             </div>
-                                            <p class="card-text mb-1" th:text="${address.street}">123 Main St</p>
-                                            <p class="card-text mb-1">
+                                            <h6 class="fw-bold mb-1" th:text="${address.street}">123 Main St</h6>
+                                            <p class="text-muted small mb-0">
                                                 <span th:text="${address.city}">City</span>,
                                                 <span th:text="${address.state}">State</span>
                                                 <span th:text="${address.zipCode}">12345</span>
                                             </p>
-                                            <p class="card-text text-muted small" th:text="${address.country}">Country
-                                            </p>
+                                            <p class="text-muted small mb-0" th:text="${address.country}">Country</p>
                                         </div>
                                     </div>
                                 </div>
                                 <div class="col-12" th:if="${addresses.empty}">
-                                    <div class="alert alert-light text-center">
-                                        No addresses saved yet.
+                                    <div class="text-center py-5 bg-light rounded-4 border border-dashed">
+                                        <i class="bi bi-geo-alt text-muted fs-1 mb-3 d-block"></i>
+                                        <h6 class="text-muted">No addresses saved yet</h6>
+                                        <button class="btn btn-link text-decoration-none" data-bs-toggle="modal"
+                                            data-bs-target="#addAddressModal">Add your first address</button>
                                     </div>
                                 </div>
                             </div>
@@ -157,45 +207,173 @@
 
                         <!-- Payment Methods Tab -->
                         <div class="tab-pane fade" id="payments" role="tabpanel">
-                            <div class="d-flex justify-content-between align-items-center mb-3">
-                                <h4 class="mb-0">Payment Methods</h4>
-                                <button class="btn btn-primary btn-sm" data-bs-toggle="modal"
+                            <div class="d-flex justify-content-between align-items-center mb-4">
+                                <h4 class="mb-0 fw-bold">Payment Methods</h4>
+                                <button class="btn btn-primary rounded-pill px-4" data-bs-toggle="modal"
                                     data-bs-target="#addCardModal">
-                                    <i class="bi bi-plus-lg"></i> Add New Card
+                                    <i class="bi bi-plus-lg me-2"></i> Add New Card
                                 </button>
                             </div>
 
-                            <div class="row">
-                                <div class="col-md-6 mb-3" th:each="card : ${cards}">
-                                    <div class="card h-100">
-                                        <div class="card-body">
-                                            <div class="d-flex justify-content-between align-items-start mb-3">
-                                                <h5 class="card-title mb-0">
-                                                    <i class="bi bi-credit-card-2-front"></i>
-                                                    <span th:text="${card.brand}">Visa</span>
-                                                    <span th:if="${card.default}"
-                                                        class="badge bg-success ms-2">Default</span>
-                                                </h5>
-                                                <button class="btn btn-link text-danger p-0"
-                                                    th:onclick="'deleteCard(' + ${card.id} + ')'">
-                                                    <i class="bi bi-trash"></i>
-                                                </button>
+                            <div class="row g-4">
+                                <div class="col-md-6" th:each="card : ${cards}">
+                                    <div class="card h-100 border-0 shadow-sm rounded-4 bg-gradient-dark text-white"
+                                        style="background: linear-gradient(135deg, #2c3e50, #4ca1af);">
+                                        <div class="card-body p-4 d-flex flex-column justify-content-between"
+                                            style="min-height: 200px;">
+                                            <div class="d-flex justify-content-between align-items-start">
+                                                <i class="bi bi-credit-card-2-front fs-3"></i>
+                                                <div class="dropdown">
+                                                    <button class="btn btn-link text-white p-0 opacity-75" type="button"
+                                                        data-bs-toggle="dropdown">
+                                                        <i class="bi bi-three-dots-vertical"></i>
+                                                    </button>
+                                                    <ul
+                                                        class="dropdown-menu dropdown-menu-end border-0 shadow-sm rounded-3">
+                                                        <li><a class="dropdown-item text-danger" href="#"
+                                                                th:onclick="'deleteCard(' + ${card.id} + ')'">
+                                                                <i class="bi bi-trash me-2"></i> Delete
+                                                            </a></li>
+                                                    </ul>
+                                                </div>
                                             </div>
-                                            <p class="card-text mb-1">
-                                                **** **** **** <span th:text="${card.last4}">1234</span>
-                                            </p>
-                                            <p class="card-text text-muted small">
-                                                Expires: <span th:text="${card.expiryMonth}">12</span>/<span
-                                                    th:text="${card.expiryYear}">25</span>
-                                            </p>
-                                            <p class="card-text text-muted small" th:text="${card.holderName}">John Doe
-                                            </p>
+                                            <div>
+                                                <h4 class="mb-4" style="letter-spacing: 2px;">
+                                                    **** **** **** <span th:text="${card.last4}">1234</span>
+                                                </h4>
+                                                <div class="d-flex justify-content-between align-items-end">
+                                                    <div>
+                                                        <small class="d-block opacity-75 text-uppercase"
+                                                            style="font-size: 0.7rem;">Card Holder</small>
+                                                        <span class="fw-bold" th:text="${card.holderName}">JOHN
+                                                            DOE</span>
+                                                    </div>
+                                                    <div class="text-end">
+                                                        <small class="d-block opacity-75 text-uppercase"
+                                                            style="font-size: 0.7rem;">Expires</small>
+                                                        <span class="fw-bold">
+                                                            <span th:text="${card.expiryMonth}">12</span>/<span
+                                                                th:text="${card.expiryYear}">25</span>
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
                                 <div class="col-12" th:if="${cards.empty}">
-                                    <div class="alert alert-light text-center">
-                                        No payment methods saved yet.
+                                    <div class="text-center py-5 bg-light rounded-4 border border-dashed">
+                                        <i class="bi bi-credit-card text-muted fs-1 mb-3 d-block"></i>
+                                        <h6 class="text-muted">No payment methods saved yet</h6>
+                                        <button class="btn btn-link text-decoration-none" data-bs-toggle="modal"
+                                            data-bs-target="#addCardModal">Add your first card</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Notification Preferences Tab -->
+                        <div class="tab-pane fade" id="notifications" role="tabpanel">
+                            <div class="card border-0 shadow-sm rounded-4">
+                                <div class="card-header bg-white border-bottom-0 pt-4 px-4">
+                                    <h5 class="mb-0 fw-bold"><i class="bi bi-bell-fill me-2 text-primary"></i> Email
+                                        Notification Preferences</h5>
+                                </div>
+                                <div class="card-body p-4">
+                                    <div
+                                        class="alert alert-info bg-info bg-opacity-10 border-0 text-info mb-4 rounded-3">
+                                        <div class="d-flex">
+                                            <i class="bi bi-info-circle-fill me-3 fs-5"></i>
+                                            <div>
+                                                <strong>Stay Updated</strong>
+                                                <p class="mb-0 small">Receive real-time updates about your orders,
+                                                    shipping status, and exclusive offers directly to your inbox.</p>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div id="notificationStatus" class="mb-4">
+                                        <div class="d-flex justify-content-center py-5">
+                                            <div class="spinner-border text-primary" role="status">
+                                                <span class="visually-hidden">Loading...</span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div id="notificationControls" style="display: none;">
+                                        <div class="mb-4">
+                                            <div class="list-group rounded-4 overflow-hidden">
+                                                <div
+                                                    class="list-group-item border-0 bg-light p-4 d-flex justify-content-between align-items-center">
+                                                    <div>
+                                                        <h6 class="fw-bold mb-1">Order Notifications</h6>
+                                                        <p class="text-muted small mb-0" id="statusText">Checking
+                                                            status...</p>
+                                                    </div>
+                                                    <div class="form-check form-switch">
+                                                        <input class="form-check-input" type="checkbox"
+                                                            id="emailNotificationToggle"
+                                                            style="width: 50px; height: 25px; cursor: pointer;">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div id="confirmationSection" class="mb-4" style="display: none;">
+                                            <div
+                                                class="alert alert-warning border-0 bg-warning bg-opacity-10 text-warning rounded-3">
+                                                <div class="d-flex align-items-center">
+                                                    <i class="bi bi-exclamation-triangle-fill me-3 fs-5"></i>
+                                                    <div class="flex-grow-1">
+                                                        <strong>Confirmation Pending</strong>
+                                                        <p class="mb-0 small">Please check your email and click the
+                                                            confirmation link sent by AWS SNS.</p>
+                                                    </div>
+                                                    <button class="btn btn-sm btn-warning text-white rounded-pill px-3"
+                                                        onclick="resendConfirmation()">
+                                                        Resend
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div id="confirmedSection" class="mb-4" style="display: none;">
+                                            <div
+                                                class="alert alert-success border-0 bg-success bg-opacity-10 text-success rounded-3">
+                                                <div class="d-flex align-items-center">
+                                                    <i class="bi bi-check-circle-fill me-3 fs-5"></i>
+                                                    <div>
+                                                        <strong>Active</strong>
+                                                        <p class="mb-0 small">You are subscribed to all order
+                                                            notifications.</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="row g-3 mt-2">
+                                            <div class="col-md-4">
+                                                <div class="p-3 bg-light rounded-3 text-center h-100">
+                                                    <i class="bi bi-bag-check-fill text-primary fs-4 mb-2 d-block"></i>
+                                                    <span class="small fw-bold d-block">Order Placed</span>
+                                                    <span class="text-muted x-small">Immediate confirmation</span>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div class="p-3 bg-light rounded-3 text-center h-100">
+                                                    <i class="bi bi-truck text-primary fs-4 mb-2 d-block"></i>
+                                                    <span class="small fw-bold d-block">Order Shipped</span>
+                                                    <span class="text-muted x-small">Tracking details</span>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div class="p-3 bg-light rounded-3 text-center h-100">
+                                                    <i class="bi bi-box-seam-fill text-primary fs-4 mb-2 d-block"></i>
+                                                    <span class="small fw-bold d-block">Delivered</span>
+                                                    <span class="text-muted x-small">Delivery confirmation</span>
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -206,47 +384,60 @@
         </div>
         <!-- Add Address Modal -->
         <div class="modal fade" id="addAddressModal" tabindex="-1" aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title">Add New Address</h5>
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content border-0 shadow-lg rounded-4">
+                    <div class="modal-header border-bottom-0 pb-0">
+                        <h5 class="modal-title fw-bold">Add New Address</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
-                    <div class="modal-body">
+                    <div class="modal-body pt-4">
                         <form id="addAddressForm">
-                            <div class="mb-3">
-                                <label class="form-label">Street Address</label>
-                                <textarea class="form-control" name="street" required></textarea>
+                            <div class="form-floating mb-3">
+                                <textarea class="form-control" name="street" placeholder="Street Address"
+                                    id="streetInput" style="height: 100px" required></textarea>
+                                <label for="streetInput">Street Address</label>
                             </div>
-                            <div class="row">
-                                <div class="col-md-6 mb-3">
-                                    <label class="form-label">City</label>
-                                    <input type="text" class="form-control" name="city" required>
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <div class="form-floating">
+                                        <input type="text" class="form-control" name="city" id="cityInput"
+                                            placeholder="City" required>
+                                        <label for="cityInput">City</label>
+                                    </div>
                                 </div>
-                                <div class="col-md-6 mb-3">
-                                    <label class="form-label">State</label>
-                                    <input type="text" class="form-control" name="state" required>
+                                <div class="col-md-6">
+                                    <div class="form-floating">
+                                        <input type="text" class="form-control" name="state" id="stateInput"
+                                            placeholder="State" required>
+                                        <label for="stateInput">State</label>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-floating">
+                                        <input type="text" class="form-control" name="zipCode" id="zipInput"
+                                            placeholder="ZIP Code" required>
+                                        <label for="zipInput">ZIP Code</label>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-floating">
+                                        <input type="text" class="form-control" name="country" id="countryInput"
+                                            placeholder="Country" required>
+                                        <label for="countryInput">Country</label>
+                                    </div>
                                 </div>
                             </div>
-                            <div class="row">
-                                <div class="col-md-6 mb-3">
-                                    <label class="form-label">ZIP Code</label>
-                                    <input type="text" class="form-control" name="zipCode" required>
-                                </div>
-                                <div class="col-md-6 mb-3">
-                                    <label class="form-label">Country</label>
-                                    <input type="text" class="form-control" name="country" required>
-                                </div>
-                            </div>
-                            <div class="form-check mb-3">
+                            <div class="form-check mt-3">
                                 <input class="form-check-input" type="checkbox" name="isDefault" id="defaultAddress">
                                 <label class="form-check-label" for="defaultAddress">Set as default address</label>
                             </div>
                         </form>
                     </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                        <button type="button" class="btn btn-primary" onclick="saveAddress()">Save Address</button>
+                    <div class="modal-footer border-top-0 pt-0 pb-4">
+                        <button type="button" class="btn btn-light rounded-pill px-4"
+                            data-bs-dismiss="modal">Cancel</button>
+                        <button type="button" class="btn btn-primary rounded-pill px-4" onclick="saveAddress()">Save
+                            Address</button>
                     </div>
                 </div>
             </div>
@@ -254,43 +445,51 @@
 
         <!-- Add Card Modal -->
         <div class="modal fade" id="addCardModal" tabindex="-1" aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title">Add New Card</h5>
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content border-0 shadow-lg rounded-4">
+                    <div class="modal-header border-bottom-0 pb-0">
+                        <h5 class="modal-title fw-bold">Add New Card</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
-                    <div class="modal-body">
+                    <div class="modal-body pt-4">
                         <form id="addCardForm">
-                            <div class="mb-3">
-                                <label class="form-label">Card Number</label>
+                            <div class="form-floating mb-3">
                                 <input type="text" class="form-control" id="cardNumberInput" maxlength="19"
                                     placeholder="xxxx xxxx xxxx xxxx" required>
+                                <label for="cardNumberInput">Card Number</label>
                             </div>
-                            <div class="row">
-                                <div class="col-md-6 mb-3">
-                                    <label class="form-label">Expiry (MM/YY)</label>
-                                    <input type="text" class="form-control" id="cardExpiryInput" maxlength="5"
-                                        placeholder="MM/YY" required>
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <div class="form-floating">
+                                        <input type="text" class="form-control" id="cardExpiryInput" maxlength="5"
+                                            placeholder="MM/YY" required>
+                                        <label for="cardExpiryInput">Expiry (MM/YY)</label>
+                                    </div>
                                 </div>
-                                <div class="col-md-6 mb-3">
-                                    <label class="form-label">CVC</label>
-                                    <input type="text" class="form-control" maxlength="4" placeholder="123" required>
+                                <div class="col-md-6">
+                                    <div class="form-floating">
+                                        <input type="text" class="form-control" maxlength="4" placeholder="CVC"
+                                            required>
+                                        <label>CVC</label>
+                                    </div>
                                 </div>
                             </div>
-                            <div class="mb-3">
-                                <label class="form-label">Cardholder Name</label>
-                                <input type="text" class="form-control" name="holderName" required>
+                            <div class="form-floating mt-3">
+                                <input type="text" class="form-control" name="holderName" id="holderNameInput"
+                                    placeholder="Cardholder Name" required>
+                                <label for="holderNameInput">Cardholder Name</label>
                             </div>
-                            <div class="form-check mb-3">
+                            <div class="form-check mt-3">
                                 <input class="form-check-input" type="checkbox" name="isDefault" id="defaultCard">
                                 <label class="form-check-label" for="defaultCard">Set as default payment method</label>
                             </div>
                         </form>
                     </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                        <button type="button" class="btn btn-primary" onclick="saveCard()">Save Card</button>
+                    <div class="modal-footer border-top-0 pt-0 pb-4">
+                        <button type="button" class="btn btn-light rounded-pill px-4"
+                            data-bs-dismiss="modal">Cancel</button>
+                        <button type="button" class="btn btn-primary rounded-pill px-4" onclick="saveCard()">Save
+                            Card</button>
                     </div>
                 </div>
             </div>
@@ -299,6 +498,111 @@
 
     <th:block layout:fragment="scripts">
         <script>
+            // Load notification preferences on page load
+            document.addEventListener('DOMContentLoaded', function () {
+                loadNotificationPreferences();
+            });
+
+            function loadNotificationPreferences() {
+                fetch('/api/notifications/preferences')
+                    .then(response => response.json())
+                    .then(data => {
+                        document.getElementById('notificationStatus').style.display = 'none';
+                        document.getElementById('notificationControls').style.display = 'block';
+
+                        const toggle = document.getElementById('emailNotificationToggle');
+                        toggle.checked = data.emailNotificationsEnabled;
+
+                        updateNotificationStatus(data);
+
+                        // Add event listener for toggle
+                        toggle.addEventListener('change', function () {
+                            toggleNotifications(this.checked);
+                        });
+                    })
+                    .catch(error => {
+                        console.error('Error loading notification preferences:', error);
+                        document.getElementById('notificationStatus').innerHTML =
+                            '<div class="alert alert-danger">Failed to load notification preferences</div>';
+                    });
+            }
+
+            function updateNotificationStatus(data) {
+                const statusText = document.getElementById('statusText');
+                const confirmationSection = document.getElementById('confirmationSection');
+                const confirmedSection = document.getElementById('confirmedSection');
+
+                if (data.emailNotificationsEnabled) {
+                    if (data.emailSubscriptionConfirmed) {
+                        statusText.textContent = 'Enabled and confirmed';
+                        statusText.className = 'text-success small mb-0';
+                        confirmationSection.style.display = 'none';
+                        confirmedSection.style.display = 'block';
+                    } else if (data.hasSubscriptionArn) {
+                        statusText.textContent = 'Enabled, waiting for confirmation';
+                        statusText.className = 'text-warning small mb-0';
+                        confirmationSection.style.display = 'block';
+                        confirmedSection.style.display = 'none';
+                    } else {
+                        statusText.textContent = 'Enabled';
+                        statusText.className = 'text-success small mb-0';
+                        confirmationSection.style.display = 'none';
+                        confirmedSection.style.display = 'none';
+                    }
+                } else {
+                    statusText.textContent = 'Disabled';
+                    statusText.className = 'text-muted small mb-0';
+                    confirmationSection.style.display = 'none';
+                    confirmedSection.style.display = 'none';
+                }
+            }
+
+            function toggleNotifications(enabled) {
+                const url = enabled ? '/api/notifications/enable' : '/api/notifications/disable';
+                const toggle = document.getElementById('emailNotificationToggle');
+
+                fetch(url, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' }
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            if (enabled) {
+                                // Optional: Show a toast or subtle notification instead of alert
+                            }
+                            loadNotificationPreferences();
+                        } else {
+                            alert('Failed to update notification preferences: ' + data.error);
+                            toggle.checked = !enabled;
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error toggling notifications:', error);
+                        alert('Failed to update notification preferences');
+                        toggle.checked = !enabled;
+                    });
+            }
+
+            function resendConfirmation() {
+                fetch('/api/notifications/resend-confirmation', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' }
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            alert('Confirmation email sent! Please check your inbox.');
+                        } else {
+                            alert('Failed to resend confirmation: ' + data.error);
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error resending confirmation:', error);
+                        alert('Failed to resend confirmation email');
+                    });
+            }
+
             // Format Card Inputs
             document.getElementById('cardNumberInput').addEventListener('input', function (e) {
                 let value = e.target.value.replace(/\D/g, '');

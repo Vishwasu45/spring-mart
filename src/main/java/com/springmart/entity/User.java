@@ -45,6 +45,20 @@ public class User {
     @Builder.Default
     private Boolean enabled = true;
 
+    @Column(name = "email_notifications_enabled", nullable = false)
+    @Builder.Default
+    private Boolean emailNotificationsEnabled = true;
+
+    @Column(name = "sns_subscription_arn", length = 500)
+    private String snsSubscriptionArn;
+
+    @Column(name = "email_subscription_confirmed", nullable = false)
+    @Builder.Default
+    private Boolean emailSubscriptionConfirmed = false;
+
+    @Column(name = "email_subscribed_at")
+    private LocalDateTime emailSubscribedAt;
+
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "role_id"))
     @Builder.Default

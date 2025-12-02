@@ -45,10 +45,20 @@ app:
     region: ${AWS_REGION:us-east-1}
     s3:
       bucket-name: ${S3_BUCKET_NAME:springmart-products}
+      image-bucket: ${S3_IMAGE_BUCKET:springmart-images}
     sqs:
-      queue-name: ${SQS_QUEUE_NAME:springmart-orders}
+      order-queue-name: ${SQS_ORDER_QUEUE:springmart-orders}
+      order-dlq-name: ${SQS_ORDER_DLQ:springmart-orders-dlq}
     sns:
-      topic-arn: ${SNS_TOPIC_ARN:arn:aws:sns:us-east-1:123456789:springmart-notifications}
+      order-topic-arn: ${SNS_ORDER_TOPIC:arn:aws:sns:us-east-1:000000000000:order-events}
+    dynamodb:
+      product-search-table: ${DYNAMODB_PRODUCT_TABLE:springmart-products}
+    cloudwatch:
+      namespace: ${CLOUDWATCH_NAMESPACE:SpringMart}
+    lambda:
+      image-processor-function: ${LAMBDA_IMAGE_PROCESSOR:image-processor}
+    ses:
+      from-email: ${SES_FROM_EMAIL:noreply@springmart.com}
   
   cache:
     ttl: 3600 # 1 hour in seconds

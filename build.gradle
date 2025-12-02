@@ -41,11 +41,18 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-data-redis'
     implementation 'io.lettuce:lettuce-core'
     
-    // AWS SDK
-    implementation platform('software.amazon.awssdk:bom:2.21.0')
+    // AWS SDK - Use BOM for consistent versions
+    implementation platform('software.amazon.awssdk:bom:2.25.0')
     implementation 'software.amazon.awssdk:s3'
     implementation 'software.amazon.awssdk:sqs'
     implementation 'software.amazon.awssdk:sns'
+    implementation 'software.amazon.awssdk:dynamodb'
+    implementation 'software.amazon.awssdk:dynamodb-enhanced'
+    implementation 'software.amazon.awssdk:cloudwatch'
+    implementation 'software.amazon.awssdk:lambda'
+    implementation 'software.amazon.awssdk:ses'
+    implementation 'software.amazon.awssdk:aws-core'
+    implementation 'software.amazon.awssdk:protocol-core'
     
     // JWT
     implementation 'io.jsonwebtoken:jjwt-api:0.12.3'

@@ -1,6 +1,7 @@
 package com.springmart.service;
 
 import com.springmart.dto.ProductDTO;
+import com.springmart.dto.ProductFilterRequest;
 import com.springmart.entity.Category;
 import com.springmart.entity.Product;
 import com.springmart.entity.ProductImage;
@@ -14,10 +15,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -56,6 +60,11 @@ public class ProductService {
 
     public Page<ProductDTO> searchProducts(String keyword, Pageable pageable) {
         return productRepository.searchProducts(keyword, pageable)
+                .map(this::convertToDTO);
+    }
+
+    public Page<ProductDTO> getFilteredProducts(ProductFilterRequest filterRequest) {
+        return productRepository.findWithFilters(filterRequest)
                 .map(this::convertToDTO);
     }
 
@@ -215,5 +224,65 @@ public class ProductService {
                 .replaceAll("\\s+", "-")
                 .replaceAll("-+", "-")
                 + "-" + System.currentTimeMillis();
+    }
+
+    /**
+     * Get similar products based on category and price range
+     */
+    public List<ProductDTO> getSimilarProducts(Long productId, int limit) {
+        Product product = productRepository.findById(productId)
+                .orElseThrow(() -> new ResourceNotFoundException("Product", "id", productId));
+
+        // Calculate price range (±30% of current product price)
+        BigDecimal minPrice = product.getPrice().multiply(BigDecimal.valueOf(0.7));
+        BigDecimal maxPrice = product.getPrice().multiply(BigDecimal.valueOf(1.3));
+
+        // Find products in same category within price range
+        List<Product> similarProducts = productRepository.findByCategoryAndPriceRange(
+                product.getCategory().getId(),
+                minPrice,
+                maxPrice,
+                PageRequest.of(0, limit + 1));
+
+        return similarProducts.stream()
+                .filter(p -> !p.getId().equals(productId)) // Exclude current product
+                .limit(limit)
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * Get personalized recommendations based on user's order history
+     */
+    public List<ProductDTO> getPersonalizedRecommendations(Long userId, int limit) {
+        // Get categories from user's past orders
+        List<Long> categoryIds = productRepository.findCategoriesByUserOrders(userId);
+
+        if (categoryIds.isEmpty()) {
+            // If no order history, return top rated products
+            return getTopRatedProducts(limit);
+        }
+
+        // Get top rated products from these categories
+        List<Product> recommendedProducts = productRepository.findTopRatedByCategories(
+                categoryIds,
+                PageRequest.of(0, limit));
+
+        return recommendedProducts.stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * Get trending products (most purchased in last 30 days)
+     */
+    public List<ProductDTO> getTrendingProducts(int limit) {
+        List<Product> trendingProducts = productRepository.findTrendingProducts(
+                LocalDateTime.now().minusDays(30),
+                PageRequest.of(0, limit));
+
+        return trendingProducts.stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
     }
 }

@@ -59,4 +59,14 @@ public class HomeController {
     public String login() {
         return "login";
     }
+
+    @GetMapping("/wishlist")
+    public String wishlist() {
+        return "wishlist";
+    }
+
+    @GetMapping("/track-order")
+    public String trackOrder() {
+        return "track-order";
+    }
 }

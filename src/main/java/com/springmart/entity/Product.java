@@ -110,4 +110,16 @@ public class Product {
                 .average()
                 .orElse(0.0);
     }
+
+    @Transient
+    public String getPrimaryImageUrl() {
+        if (images == null || images.isEmpty()) {
+            return null;
+        }
+        return images.stream()
+                .filter(ProductImage::getIsPrimary)
+                .findFirst()
+                .map(ProductImage::getImageUrl)
+                .orElse(images.get(0).getImageUrl());
+    }
 }

@@ -126,14 +126,41 @@
                             <div class="card-body">
                                 <h4 class="card-title">Order Summary</h4>
                                 <hr>
+                                
+                                <!-- Promo Code Section -->
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">Promo Code</label>
+                                    <div class="input-group">
+                                        <input type="text" id="promoCodeInput" class="form-control" 
+                                               placeholder="Enter code" maxlength="50">
+                                        <button class="btn btn-outline-primary" type="button" 
+                                                id="applyPromoBtn" onclick="applyPromoCode()">
+                                            Apply
+                                        </button>
+                                    </div>
+                                    <div id="promoCodeMessage" class="mt-2"></div>
+                                    <div id="promoCodeSuccess" class="alert alert-success mt-2" style="display: none;">
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <small id="promoDescription"></small>
+                                            <button type="button" class="btn-close btn-close-sm" 
+                                                    onclick="removePromoCode()"></button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <hr>
+                                
                                 <div class="d-flex justify-content-between mb-2">
                                     <span>Subtotal:</span>
-                                    <strong>$<span
+                                    <strong>$<span id="subtotalAmount"
                                             th:text="${#numbers.formatDecimal(cartTotal, 1, 2)}">0.00</span></strong>
+                                </div>
+                                <div class="d-flex justify-content-between mb-2" id="discountRow" style="display: none;">
+                                    <span class="text-success">Discount:</span>
+                                    <span class="text-success">-$<span id="discountAmount">0.00</span></span>
                                 </div>
                                 <div class="d-flex justify-content-between mb-2">
                                     <span>Tax (10%):</span>
-                                    <span>$<span
+                                    <span>$<span id="taxAmount"
                                             th:text="${#numbers.formatDecimal(cartTotal * 0.10, 1, 2)}">0.00</span></span>
                                 </div>
                                 <div class="d-flex justify-content-between mb-2">
@@ -143,7 +170,7 @@
                                 <hr>
                                 <div class="d-flex justify-content-between mb-3">
                                     <h5>Total:</h5>
-                                    <h5>$<span
+                                    <h5>$<span id="totalAmount"
                                             th:text="${#numbers.formatDecimal(cartTotal * 1.10 + 10, 1, 2)}">0.00</span>
                                     </h5>
                                 </div>
@@ -248,6 +275,94 @@
     </div>
 
     <th:block layout:fragment="scripts">
+        <script th:inline="javascript">
+            const cartTotal = /*[[${cartTotal}]]*/ 0;
+            let appliedPromoCode = null;
+            let discountAmount = 0;
+
+            // Initialize totals on page load
+            document.addEventListener('DOMContentLoaded', function() {
+                updateOrderTotals();
+            });
+
+            async function applyPromoCode() {
+                const code = document.getElementById('promoCodeInput').value.trim();
+                if (!code) {
+                    showPromoMessage('Please enter a promo code', 'danger');
+                    return;
+                }
+
+                const btn = document.getElementById('applyPromoBtn');
+                btn.disabled = true;
+                btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span>';
+
+                try {
+                    const orderAmount = cartTotal;
+                    const response = await fetch(`/api/promo-codes/validate?code=${encodeURIComponent(code)}&orderAmount=${orderAmount}`, {
+                        method: 'POST'
+                    });
+
+                    const data = await response.json();
+
+                    if (data.valid) {
+                        appliedPromoCode = data;
+                        discountAmount = data.discountAmount;
+                        
+                        document.getElementById('promoDescription').textContent = 
+                            data.description || `${data.code} applied - Save $${data.discountAmount.toFixed(2)}`;
+                        document.getElementById('promoCodeSuccess').style.display = 'block';
+                        document.getElementById('promoCodeInput').disabled = true;
+                        document.getElementById('promoCodeMessage').innerHTML = '';
+                        
+                        updateOrderTotals();
+                    } else {
+                        showPromoMessage(data.message, 'danger');
+                    }
+                } catch (error) {
+                    showPromoMessage('Failed to validate promo code', 'danger');
+                } finally {
+                    btn.disabled = false;
+                    btn.innerHTML = 'Apply';
+                }
+            }
+
+            function removePromoCode() {
+                appliedPromoCode = null;
+                discountAmount = 0;
+                document.getElementById('promoCodeSuccess').style.display = 'none';
+                document.getElementById('promoCodeInput').value = '';
+                document.getElementById('promoCodeInput').disabled = false;
+                updateOrderTotals();
+            }
+
+            function updateOrderTotals() {
+                const subtotal = cartTotal;
+                const discount = discountAmount;
+                const subtotalAfterDiscount = subtotal - discount;
+                const tax = subtotalAfterDiscount * 0.10;
+                const shipping = 10.00;
+                const total = subtotalAfterDiscount + tax + shipping;
+
+                document.getElementById('subtotalAmount').textContent = subtotal.toFixed(2);
+                document.getElementById('taxAmount').textContent = tax.toFixed(2);
+                document.getElementById('totalAmount').textContent = total.toFixed(2);
+
+                if (discount > 0) {
+                    document.getElementById('discountAmount').textContent = discount.toFixed(2);
+                    document.getElementById('discountRow').style.display = 'flex';
+                } else {
+                    document.getElementById('discountRow').style.display = 'none';
+                }
+            }
+
+            function showPromoMessage(message, type) {
+                const messageDiv = document.getElementById('promoCodeMessage');
+                messageDiv.innerHTML = `<small class="text-${type}">${message}</small>`;
+                setTimeout(() => {
+                    messageDiv.innerHTML = '';
+                }, 5000);
+            }
+        </script>
         <script>
             // Format Card Number
             const cardNumberInput = document.getElementById('cardNumber');
@@ -385,6 +500,11 @@
                         shippingZip: formData.get('shippingZip'),
                         shippingCountry: formData.get('shippingCountry')
                     };
+
+                    // Add promo code if applied
+                    if (appliedPromoCode && appliedPromoCode.code) {
+                        orderData.promoCode = appliedPromoCode.code;
+                    }
 
                     return fetch('/api/orders', {
                         method: 'POST',

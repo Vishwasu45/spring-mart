@@ -76,6 +76,9 @@ public class UserService {
                 .roles(user.getRoles().stream()
                         .map(role -> role.getName())
                         .collect(Collectors.toList()))
+                .emailNotificationsEnabled(user.getEmailNotificationsEnabled())
+                .emailSubscriptionConfirmed(user.getEmailSubscriptionConfirmed())
+                .emailSubscribedAt(user.getEmailSubscribedAt())
                 .createdAt(user.getCreatedAt())
                 .updatedAt(user.getUpdatedAt())
                 .build();

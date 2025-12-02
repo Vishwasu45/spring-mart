@@ -27,4 +27,11 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
 
     @Query("SELECT COUNT(o) FROM Order o WHERE o.user.id = :userId")
     Long countByUserId(Long userId);
+
+    // Guest order queries
+    List<Order> findByGuestSessionId(String guestSessionId);
+
+    List<Order> findByGuestEmail(String guestEmail);
+
+    Optional<Order> findByOrderNumberAndGuestEmail(String orderNumber, String guestEmail);
 }
